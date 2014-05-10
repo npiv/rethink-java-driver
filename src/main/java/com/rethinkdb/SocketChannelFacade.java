@@ -1,8 +1,6 @@
 package com.rethinkdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.rethinkdb.error.RethinkDBConnectException;
-import com.rethinkdb.error.RethinkDBException;
 import com.rethinkdb.proto.Q2L;
 
 import java.io.IOException;
@@ -21,7 +19,7 @@ public class SocketChannelFacade {
             socketChannel.connect(new InetSocketAddress(hostname, port));
 
         } catch (IOException e) {
-            throw new RethinkDBConnectException(e);
+            throw new RethinkDBException(e);
         }
     }
 

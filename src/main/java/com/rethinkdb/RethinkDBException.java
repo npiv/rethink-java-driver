@@ -1,4 +1,4 @@
-package com.rethinkdb.error;
+package com.rethinkdb;
 
 public class RethinkDBException extends RuntimeException {
     public RethinkDBException() {
