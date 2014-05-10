@@ -3,20 +3,26 @@ package com.rethinkdb;
 import com.rethinkdb.query.RethinkQueryBuilder;
 
 /**
- * ### The base class to start interacting with RethinkDB.
+ * <h3>The base class to start interacting with RethinkDB.</h3>
  *
+ * <p>
  * The singleton r corresponds to r in the documentation and is used to
  * open a connection or generate a query. i.e:
+ * </p>
  *
- * ```java
+ * <pre>
+ * {@code
  * RethinkDB.r.connect("hostname", 28015);
- * ```
- * or
+ * }
+ * </pre>
  *
- * ```java
+ * <p>or</p>
+ *
+ * <pre>
+ * {@code
  * RethinkDB.r.dbCreate("test")
- * ```
- *
+ * }
+ * </pre>
  */
 public class RethinkDB extends RethinkQueryBuilder {
 
@@ -28,7 +34,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     private RethinkDB() {}
 
     /**
-     * Connect with *default hostname* and *default port* and *default timeout*
+     * Connect with <i>default hostname</i> and <i>default port</i> and <i>default timeout</i>
      * @return connection
      */
     public RethinkDBConnection connect() {
@@ -36,7 +42,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname and *default port* and *default timeout*
+     * connect with given hostname and <i>default port* and <i>default timeout</i>
      * @param hostname hostname
      * @return connection
      */
@@ -45,7 +51,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname and port and *default timeout*
+     * connect with given hostname and port and <i>default timeout</i>
      * @param hostname hostname
      * @param port port
      * @return connection
@@ -55,7 +61,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname, port and authentication key and *default timeout*
+     * connect with given hostname, port and authentication key and <i>default timeout</i>
      * @param hostname hostname
      * @param port port
      * @param authKey authentication key
