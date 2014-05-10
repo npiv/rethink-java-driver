@@ -13,6 +13,11 @@ import java.util.Map;
 
 public class DBObjectMapper {
 
+    /**
+     * Maps a ProtoBuf Datum object to a DBObject
+     * @param datum datum
+     * @return DBObject
+     */
     public static DBObject fromDatumObject(Q2L.Datum datum) {
         if (datum.getType() == Q2L.Datum.DatumType.R_OBJECT) {
             Map<String, Object> repr = new HashMap<String, Object>();
@@ -30,9 +35,14 @@ public class DBObjectMapper {
 
     }
 
-    public static DBObject fromDatumObjectList(List<Q2L.Datum> responseList) {
+    /**
+     * Maps a list of Datum Objects to a DBObject
+     * @param datums datum objects
+     * @return DBObject
+     */
+    public static DBObject fromDatumObjects(List<Q2L.Datum> datums) {
         List<DBObject> results = new ArrayList<DBObject>();
-        for (Q2L.Datum datum : responseList) {
+        for (Q2L.Datum datum : datums) {
             results.add(fromDatumObject(datum));
         }
         return new DBObjectBuilder().with(DBObject.CHILDREN, results).build();
@@ -66,6 +76,13 @@ public class DBObjectMapper {
         return objects;
     }
 
+    /**
+     * Populates the fields in to based on values out of from
+     * @param to the object to map into
+     * @param from the object to map from
+     * @param <T> the type of the into object
+     * @return the into object
+     */
     public static <T> T populateObject(T to, DBObject from) {
         for (Field field : to.getClass().getDeclaredFields()) {
             try {

@@ -3,26 +3,16 @@ package com.rethinkdb;
 import com.rethinkdb.query.RethinkQueryBuilder;
 
 /**
- * <h3>The base class to start interacting with RethinkDB.</h3>
+ * <h3>The base class to begin interacting with RethinkDB.</h3>
  *
- * <p>
- * The singleton r corresponds to r in the documentation and is used to
+ * The singleton corresponds to r in the documentation and is used to
  * open a connection or generate a query. i.e:
- * </p>
  *
- * <pre>
- * {@code
- * RethinkDB.r.connect("hostname", 28015);
- * }
- * </pre>
+ * <pre>{@code RethinkDB.r.connect("hostname", 28015); }</pre>
  *
- * <p>or</p>
+ * Or
  *
- * <pre>
- * {@code
- * RethinkDB.r.dbCreate("test")
- * }
- * </pre>
+ * <pre> {@code RethinkDB.r.dbCreate("test") } </pre>
  */
 public class RethinkDB extends RethinkQueryBuilder {
 
@@ -34,7 +24,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     private RethinkDB() {}
 
     /**
-     * Connect with <i>default hostname</i> and <i>default port</i> and <i>default timeout</i>
+     * Connect with default hostname and default port and default timeout
      * @return connection
      */
     public RethinkDBConnection connect() {
@@ -42,7 +32,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname and <i>default port* and <i>default timeout</i>
+     * connect with given hostname and default port* and default timeout
      * @param hostname hostname
      * @return connection
      */
@@ -51,7 +41,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname and port and <i>default timeout</i>
+     * connect with given hostname and port and default timeout
      * @param hostname hostname
      * @param port port
      * @return connection
@@ -61,7 +51,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname, port and authentication key and <i>default timeout</i>
+     * connect with given hostname, port and authentication key and default timeout
      * @param hostname hostname
      * @param port port
      * @param authKey authentication key

@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * This object is created by RethinkQueryBuilder when the query is complete
  */
-public class RethinkTerminatingQuery {
+public class RethinkTerminatingQuery<T extends DBResult> {
     private static final AtomicInteger tokenFactory = new AtomicInteger();
     private final Class<? extends DBResult> resultClazz;
 
@@ -34,7 +34,7 @@ public class RethinkTerminatingQuery {
      * @return DBResult
      */
     // TODO: find a place to define the type of DBResult specifically
-    public com.rethinkdb.response.DBResult run(RethinkDBConnection connection) {
+    public T run(RethinkDBConnection connection) {
         Q2L.Query.Builder query = Q2L.Query.newBuilder()
                 .setType(queryInformation.getQueryType())
                 .setToken(tokenFactory.incrementAndGet())
@@ -42,7 +42,12 @@ public class RethinkTerminatingQuery {
 
         DBObject dbObject = connection.run(query);
         try {
-            return DBObjectMapper.populateObject(resultClazz.newInstance(), dbObject);
+            if (resultClazz.equals(DBObject.class)) {
+                return (T)dbObject;
+            }
+            else {
+                return (T) DBObjectMapper.populateObject(resultClazz.newInstance(), dbObject);
+            }
         } catch (InstantiationException e) {
             throw new RethinkDBException("DBResult must have default constructor " + resultClazz, e);
         } catch (IllegalAccessException e) {

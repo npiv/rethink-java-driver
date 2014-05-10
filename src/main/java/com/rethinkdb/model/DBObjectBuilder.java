@@ -3,6 +3,9 @@ package com.rethinkdb.model;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A fluent builder for DBObjects
+ */
 public class DBObjectBuilder {
     private DBObject object = new DBObject();
 

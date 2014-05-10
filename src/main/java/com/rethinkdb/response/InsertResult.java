@@ -33,4 +33,44 @@ public class InsertResult implements DBResult {
                 ", new_val=" + new_val +
                 '}';
     }
+
+    public int getInserted() {
+        return inserted;
+    }
+
+    public int getReplaced() {
+        return replaced;
+    }
+
+    public int getUnchanged() {
+        return unchanged;
+    }
+
+    public int getErrors() {
+        return errors;
+    }
+
+    public String getFirst_error() {
+        return first_error;
+    }
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public int getSkipped() {
+        return skipped;
+    }
+
+    public List<String> getGenerated_keys() {
+        return generated_keys;
+    }
+
+    public DBObject getOld_val() {
+        return old_val;
+    }
+
+    public DBObject getNew_val() {
+        return new_val;
+    }
 }

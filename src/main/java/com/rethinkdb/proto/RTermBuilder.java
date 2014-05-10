@@ -55,4 +55,10 @@ public class RTermBuilder {
                 .build();
     }
 
+    public static Term tableTerm(String tableName) {
+        return  new RTermBuilder()
+                .ofType(Q2L.Term.TermType.TABLE)
+                .addArg(RTermBuilder.datumTerm(tableName))
+                .build();
+    }
 }

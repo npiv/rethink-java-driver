@@ -3,16 +3,23 @@ package com.rethinkdb.proto;
 import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.model.DBObject;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * * Facilitate creation of ProtoBuf Datum objects
+ * Facilitate creation of ProtoBuf Datum objects
  */
 public class RDatumBuilder {
     private RDatumBuilder() {}
 
     public static Q2L.Datum createDatum(Object value) {
         Q2L.Datum.Builder builder = Q2L.Datum.newBuilder();
+
+        if (value == null) {
+            return builder
+                    .setType(Q2L.Datum.DatumType.R_NULL)
+                    .build();
+        }
 
         if (value instanceof String) {
             return builder

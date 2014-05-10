@@ -1,6 +1,8 @@
 package com.rethinkdb.query;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.RethinkDBConstants;
+import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.proto.RTermBuilder;
@@ -10,6 +12,14 @@ import com.rethinkdb.response.DMLResult;
 import com.rethinkdb.response.InsertResult;
 import com.rethinkdb.response.StringListDBResult;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * This class is the entry point for all the query, insert, dml actions that we can
+ * perform on a RethinkDB Instance.
+ */
 public class RethinkQueryBuilder {
 
     private String dbName = RethinkDBConstants.DEFAULT_DB_NAME;
@@ -25,13 +35,19 @@ public class RethinkQueryBuilder {
         return this;
     }
 
-    private RethinkTerminatingQuery terminatingQuery(Class<? extends DBResult> resultClazz,
-                                                     QueryInformation queryInformation) {
-        return new RethinkTerminatingQuery(resultClazz, queryInformation);
+    public DBObject run(RethinkDBConnection connection) {
+        return new RethinkTerminatingQuery<DBObject>(
+                DBObject.class,
+                new QueryInformation()
+                        .ofTermType(Q2L.Term.TermType.TABLE)
+                        .withArg(RTermBuilder.dbTerm(dbName))
+                        .withArgs(RTermBuilder.datumTerm(tableName))
+                ).run(connection);
     }
+    // todo: should be able to run() after table() but optional
 
-    public RethinkTerminatingQuery dbCreate(String dbName) {
-        return terminatingQuery(
+    public RethinkTerminatingQuery<DMLResult> dbCreate(String dbName) {
+        return new RethinkTerminatingQuery<DMLResult>(
                 DMLResult.class,
                 new QueryInformation()
                         .ofTermType(Q2L.Term.TermType.DB_CREATE)
@@ -39,8 +55,8 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery dbDrop(String dbName) {
-        return terminatingQuery(
+    public RethinkTerminatingQuery<DMLResult> dbDrop(String dbName) {
+        return new RethinkTerminatingQuery<DMLResult>(
                 DMLResult.class,
                 new QueryInformation()
                         .ofTermType(Q2L.Term.TermType.DB_DROP)
@@ -48,18 +64,26 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery dbList() {
-        return terminatingQuery(
+    public RethinkTerminatingQuery<StringListDBResult> dbList() {
+        return new RethinkTerminatingQuery<StringListDBResult>(
                 StringListDBResult.class,
                 new QueryInformation().ofTermType(Q2L.Term.TermType.DB_LIST)
         );
     }
 
-    public RethinkTerminatingQuery tableCreate(String tableName) {
+    public RethinkTerminatingQuery<DMLResult> tableCreate(String tableName) {
         return tableCreate(tableName, null, null, null);
     }
 
-    public RethinkTerminatingQuery tableCreate(String tableName, String primaryKey, Durability durability, String datacenter) {
+    /**
+     * Create table with tableName, primaryKey, Durability on a specific dataCenter.
+     * @param tableName tableName (mandatory)
+     * @param primaryKey primary key (leave null for default)
+     * @param durability durability  (leave null for default)
+     * @param datacenter datacenter  (leave null for default)
+     * @return query
+     */
+    public RethinkTerminatingQuery<DMLResult> tableCreate(String tableName, String primaryKey, Durability durability, String datacenter) {
         QueryInformation information = new QueryInformation()
                 .ofTermType(Q2L.Term.TermType.TABLE_CREATE)
                 .withArgs(
@@ -68,24 +92,24 @@ public class RethinkQueryBuilder {
 
                 );
 
-        if (primaryKey != null) {
-            information.withOptArg("primary_key", RTermBuilder.datumTerm(tableName));
-        }
         if (datacenter != null) {
-            information.withOptArg("datacenter", RTermBuilder.datumTerm(tableName));
+            information.withOptArg("datacenter", RTermBuilder.datumTerm(datacenter));
+        }
+        if (primaryKey != null) {
+            information.withOptArg("primary_key", RTermBuilder.datumTerm(primaryKey));
         }
         if (durability != null) {
             information.withOptArg("durability", RTermBuilder.datumTerm(durability.toString()));
         }
 
-        return terminatingQuery(
+        return new RethinkTerminatingQuery<DMLResult>(
                 DMLResult.class,
                 information
         );
     }
 
-    public RethinkTerminatingQuery tableDrop(String tableName) {
-        return terminatingQuery(
+    public RethinkTerminatingQuery<DMLResult> tableDrop(String tableName) {
+        return new RethinkTerminatingQuery<DMLResult>(
                 DMLResult.class,
                 new QueryInformation()
                         .ofTermType(Q2L.Term.TermType.TABLE_DROP)
@@ -96,8 +120,8 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery tableList() {
-        return terminatingQuery(
+    public RethinkTerminatingQuery<StringListDBResult> tableList() {
+        return new RethinkTerminatingQuery<StringListDBResult>(
                 StringListDBResult.class,
                 new QueryInformation()
                         .ofTermType(Q2L.Term.TermType.TABLE_LIST)
@@ -107,21 +131,33 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery insert(DBObject object) {
-        return insert(object, null, false, false);
+    public RethinkTerminatingQuery<InsertResult> insert(DBObject... objects) {
+        return insert(Arrays.asList(objects), null, false, false);
     }
 
-    public RethinkTerminatingQuery insert(DBObject object, Durability durability, boolean returnVals, boolean upsert) {
+    public RethinkTerminatingQuery<InsertResult> insert(List<DBObject> objects) {
+        return insert(objects, null, false, false);
+    }
+
+    public RethinkTerminatingQuery<InsertResult> insert(DBObject dbObject, Durability durability, boolean returnVals, boolean upsert) {
+        return insert(Arrays.asList(dbObject), durability, returnVals, upsert);
+    }
+
+    public RethinkTerminatingQuery<InsertResult> insert(List<DBObject> dbObjects, Durability durability, boolean returnVals, boolean upsert) {
         QueryInformation information = new QueryInformation()
                 .ofTermType(Q2L.Term.TermType.INSERT)
-                .withArgs(
-                        new RTermBuilder()
-                                .ofType(Q2L.Term.TermType.TABLE)
-                                .addArg(RTermBuilder.datumTerm(tableName))
-                                .build(),
+                .withArgs(RTermBuilder.tableTerm(tableName));
 
-                        RTermBuilder.datumTerm(object)
-                );
+        if (dbObjects.size() == 1) {
+            information.withArg(RTermBuilder.datumTerm(dbObjects.get(0)));
+        }
+        else {
+            Q2L.Term.Builder builder = Q2L.Term.newBuilder().setType(Q2L.Term.TermType.MAKE_ARRAY);
+            for (DBObject dbObject : dbObjects) {
+                builder.addArgs(RTermBuilder.datumTerm(dbObject));
+            }
+            information.withArg(builder.build());
+        }
 
         if (returnVals) {
             information.withOptArg("return_vals", RTermBuilder.datumTerm(true));
@@ -133,7 +169,23 @@ public class RethinkQueryBuilder {
             information.withOptArg("durability", RTermBuilder.datumTerm(durability.toString()));
         }
 
-        return terminatingQuery(
+        return new RethinkTerminatingQuery<InsertResult>(
+                InsertResult.class,
+                information
+        );
+    }
+
+    public RethinkTerminatingQuery<InsertResult> getAll(String key,String... keys) {
+        QueryInformation information = new QueryInformation()
+                .ofTermType(Q2L.Term.TermType.GET_ALL);
+
+        information.withArg(RTermBuilder.tableTerm(tableName));
+        information.withArg(RTermBuilder.datumTerm(key));
+        for (String k : keys) {
+            information.withArg(RTermBuilder.datumTerm(k));
+        }
+
+        return new RethinkTerminatingQuery<InsertResult>(
                 InsertResult.class,
                 information
         );
