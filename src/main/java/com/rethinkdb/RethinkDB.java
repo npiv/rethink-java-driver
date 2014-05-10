@@ -3,16 +3,20 @@ package com.rethinkdb;
 import com.rethinkdb.query.RethinkQueryBuilder;
 
 /**
- * <h3>The base class to begin interacting with RethinkDB.</h3>
+ * The starting point for all interaction with RethinkDB. This singleton corresponds to r
+ * in the documentation and is used to open a connection or generate a query. i.e:
  *
- * The singleton corresponds to r in the documentation and is used to
- * open a connection or generate a query. i.e:
- *
- * <pre>{@code RethinkDB.r.connect("hostname", 28015); }</pre>
+ * <br />
+ * <br />
+ * <pre>
+ *     {@code RethinkDB.r.connect("hostname", 28015); }
+ * </pre>
  *
  * Or
  *
- * <pre> {@code RethinkDB.r.dbCreate("test") } </pre>
+ * <pre>
+ *     {@code RethinkDB.r.dbCreate("test") }
+ * </pre>
  */
 public class RethinkDB extends RethinkQueryBuilder {
 
@@ -32,7 +36,7 @@ public class RethinkDB extends RethinkQueryBuilder {
     }
 
     /**
-     * connect with given hostname and default port* and default timeout
+     * connect with given hostname and default port and default timeout
      * @param hostname hostname
      * @return connection
      */
