@@ -88,23 +88,28 @@
 
             <plugin>
                 <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.6</version>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.8</version>
                 <configuration>
-                    <description>Official ${project.name} build of the ${project.version} release</description>
-                    <override>true</override>
-                    <includeAttached>true</includeAttached>
+                    <message>Building site for ${project.version}</message>
                     <server>github</server>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>upload</goal>
+                            <goal>site</goal>
                         </goals>
-                        <phase>install</phase>
+                        <phase>site</phase>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
