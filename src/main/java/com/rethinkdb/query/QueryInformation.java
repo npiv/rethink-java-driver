@@ -1,13 +1,15 @@
 package com.rethinkdb.query;
 
 import com.rethinkdb.proto.Q2L;
-import com.rethinkdb.response.DBResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class QueryInformation {
+/**
+ * Used within the query package to store and build a ProtoBuf query
+ */
+class QueryInformation {
     private Q2L.Query.QueryType queryType = Q2L.Query.QueryType.START;
     private Q2L.Term.TermType termType;
     private List<Q2L.Term> args;

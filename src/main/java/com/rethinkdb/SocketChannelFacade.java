@@ -92,4 +92,12 @@ public class SocketChannelFacade {
             throw new RethinkDBException(e);
         }
     }
+
+    public void close() {
+        try {
+            socketChannel.close();
+        } catch (IOException e) {
+            throw new RethinkDBException(e);
+        }
+    }
 }

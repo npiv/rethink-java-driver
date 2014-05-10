@@ -4,7 +4,6 @@ import com.rethinkdb.mapper.DBObjectMapper;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InsertResult implements DBResult {
@@ -19,12 +18,6 @@ public class InsertResult implements DBResult {
     private DBObject old_val;
     private DBObject new_val;
 
-    public InsertResult(Q2L.Response response) {
-        Q2L.Datum datum = response.getResponse(0);
-        DBObject object = DBObjectMapper.fromDatum(datum);
-        DBObjectMapper.populateObject(this, object);
-    }
-
     @Override
     public String toString() {
         return "InsertResult{" +
@@ -32,7 +25,7 @@ public class InsertResult implements DBResult {
                 ", replaced=" + replaced +
                 ", unchanged=" + unchanged +
                 ", errors=" + errors +
-                ", first_error='" + first_error + '\'' +
+                ", first_error=" + first_error +
                 ", deleted=" + deleted +
                 ", skipped=" + skipped +
                 ", generated_keys=" + generated_keys +

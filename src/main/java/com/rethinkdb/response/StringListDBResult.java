@@ -6,20 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StringListDBResult implements DBResult {
-    private List<String> result = new ArrayList<String>();
-
-    public StringListDBResult(Q2L.Response response) {
-        for (Q2L.Datum datum : response.getResponse(0).getRArrayList()) {
-            result.add(datum.getRStr());
-        }
-    }
+    private List<String> list = new ArrayList<String>();
 
     public List<String> getResult() {
-        return result;
+        return list;
     }
 
     @Override
     public String toString() {
-        return "StringListDBResult{" + result + '}';
+        return "StringListDBResult{" + list + '}';
     }
 }
