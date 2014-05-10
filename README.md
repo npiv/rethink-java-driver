@@ -1,6 +1,6 @@
-[Documentation Here](http://npiv.github.io/rethink-java-doc/html/)
-
 ## Introduction
+
+[Full Documentation, sample code here](http://npiv.github.io/rethink-java-doc/html/)
 
 The Rethink Java Driver aims to be a fully feature complete driver closely mirroring the existing ruby/python/js implementations. Due to limitations of java being a typed language some inspiration will be sought from existing java big data drivers like mongo to make the api as fluent as possible for the end user.
 
