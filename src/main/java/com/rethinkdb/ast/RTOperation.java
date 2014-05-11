@@ -1,17 +1,13 @@
 package com.rethinkdb.ast;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.rethinkdb.proto.Q2L;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RTOperation {
     private Q2L.Term.TermType termType;
-    private List<Object> args = Lists.newArrayList();
-    private Map<String, Object> optionalArgs = Maps.newHashMap();
+    private List<Object> args = new ArrayList<Object>();
+    private Map<String, Object> optionalArgs = new HashMap<String, Object>();
 
     public RTOperation(Q2L.Term.TermType termType) {
         this.termType = termType;

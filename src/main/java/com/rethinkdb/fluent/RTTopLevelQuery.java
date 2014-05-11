@@ -27,7 +27,7 @@ public class RTTopLevelQuery<T> {
     }
 
     public T run(RethinkDBConnection connection) {
-        logger.info("ready to run for {}", treeKeeper.getTree());
+        logger.debug("ready to run for {}", treeKeeper.getTree());
         DBObject dbObject = connection.run(RTOperationConverter.toProtoBufTerm(treeKeeper.getTree()));
 
         try {
