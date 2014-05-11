@@ -12,7 +12,6 @@ import java.util.List;
 public class ModifyDataIT extends AbstractITTest {
 
     @Test
-    @Ignore
     public void testModify() {
         List<DBObject> objects = new ArrayList<DBObject>();
         for (int i = 0; i < 10; i++) {
@@ -20,9 +19,13 @@ public class ModifyDataIT extends AbstractITTest {
         }
         r.db(dbName).table(tableName).insert(objects).run(con);
 
-        DBObject result = r.db(dbName).table(tableName).run(con);
-        // TODO make a DBObjectList
-        Assertions.assertThat(((List) result.get(DBObject.CHILDREN)).get(0)).isEqualTo(0);
+        List<DBObject> result = r.db(dbName).table(tableName).run(con);
+        List<Double> setKeys = new ArrayList<Double>();
+        for (DBObject dbObject : result) {
+            setKeys.add((Double)dbObject.get("abc"));
+        }
+
+        Assertions.assertThat(setKeys).contains(0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0);
     }
 
 }

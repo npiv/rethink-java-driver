@@ -11,7 +11,7 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class DBObject {
-    public static final String CHILDREN = "list";
+    public static final String CHILDREN = "_____children";
 
     protected Map<String, Object> map;
 

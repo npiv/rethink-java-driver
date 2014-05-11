@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A query that has no further actions available upon it except run
- * 
+ *
  * This object is created by RethinkQueryBuilder when the query is complete
  */
 public class RethinkTerminatingQuery<T> {

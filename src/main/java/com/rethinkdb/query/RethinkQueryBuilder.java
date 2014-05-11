@@ -31,9 +31,9 @@ public class RethinkQueryBuilder {
         return this;
     }
 
-    public DBObject run(RethinkDBConnection connection) {
-        return new RethinkTerminatingQuery<DBObject>(
-                DBObject.class,
+    public List run(RethinkDBConnection connection) {
+        return new RethinkTerminatingQuery<List>(
+                List.class,
                 new QueryInformation()
                         .ofTermType(Q2L.Term.TermType.TABLE)
                         .withArg(RTermBuilder.dbTerm(dbName))

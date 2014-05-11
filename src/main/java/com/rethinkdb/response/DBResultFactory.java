@@ -15,7 +15,7 @@ public class DBResultFactory {
             case SUCCESS_ATOM:
                 return DBObjectMapper.fromDatumObject(response.getResponse(0));
             case SUCCESS_SEQUENCE:
-                return DBObjectMapper.fromDatumObjects(response.getResponseList());
+                return DBObjectMapper.fromDatumObjectList(response.getResponseList());
 
             case WAIT_COMPLETE:
             case SUCCESS_PARTIAL:

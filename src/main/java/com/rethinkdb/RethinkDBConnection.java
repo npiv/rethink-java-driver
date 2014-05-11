@@ -71,7 +71,8 @@ public class RethinkDBConnection {
         return DBResultFactory.convert(response);
     }
 
-    public void setDbOptionIfNeeded(Q2L.Query.Builder q, String db) {
+    // set the global option dbName if user chose one through use
+    private void setDbOptionIfNeeded(Q2L.Query.Builder q, String db) {
         if (!ProtoUtil.hasKey(q.getGlobalOptargsList(), "db") && db != null) {
             q.addGlobalOptargs(
                     RAssocPairBuilder.queryPair(

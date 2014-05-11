@@ -42,7 +42,7 @@ public class DBObjectMapper {
      * @param datums datum objects
      * @return DBObject
      */
-    public static DBObject fromDatumObjects(List<Q2L.Datum> datums) {
+    public static DBObject fromDatumObjectList(List<Q2L.Datum> datums) {
         List<DBObject> results = new ArrayList<DBObject>();
         for (Q2L.Datum datum : datums) {
             results.add(fromDatumObject(datum));
