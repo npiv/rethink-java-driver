@@ -1,9 +1,10 @@
-package com.rethinkdb.fluent;
+package com.rethinkdb.fluent.types;
 
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.ast.RTOperationConverter;
 import com.rethinkdb.ast.RTTreeKeeper;
+import com.rethinkdb.fluent.RTTopLevelQuery;
 import com.rethinkdb.mapper.DBObjectMapper;
 import com.rethinkdb.model.DBObject;
 import org.slf4j.Logger;

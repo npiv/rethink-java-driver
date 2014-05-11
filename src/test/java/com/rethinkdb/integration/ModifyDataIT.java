@@ -20,7 +20,7 @@ public class ModifyDataIT extends AbstractITTest {
         }
         r.db(dbName).table(tableName).insert(objects).run(con);
 
-        List<DBObject> result = (List<DBObject>) r.db(dbName).table(tableName).run(con);
+        List<DBObject> result = r.db(dbName).table(tableName).run(con);
         List<Double> setKeys = new ArrayList<Double>();
         for (DBObject dbObject : result) {
             setKeys.add((Double)dbObject.get("abc"));
@@ -31,9 +31,9 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
       public void doubleInsertFailsWithoutUpsert() {
-        DMLResult firstResult = (DMLResult) r.db(dbName).table(tableName)
+        DMLResult firstResult = r.db(dbName).table(tableName)
                 .insert(new DBObjectBuilder().with("id", 1).build()).run(con);
-        DMLResult secondResult = (DMLResult) r.db(dbName).table(tableName)
+        DMLResult secondResult = r.db(dbName).table(tableName)
                 .insert(new DBObjectBuilder().with("id", 1).with("field", "a").build()).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
@@ -44,9 +44,9 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void doubleInsertWorksWithUpsert() {
-        DMLResult firstResult = (DMLResult) r.db(dbName).table(tableName)
+        DMLResult firstResult = r.db(dbName).table(tableName)
                 .insert(new DBObjectBuilder().with("id", 1).build(), Durability.hard, false, true).run(con);
-        DMLResult secondResult = (DMLResult) r.db(dbName).table(tableName)
+        DMLResult secondResult = r.db(dbName).table(tableName)
                 .insert(new DBObjectBuilder().with("id", 1).with("field", "a").build(), Durability.hard, false, true).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);

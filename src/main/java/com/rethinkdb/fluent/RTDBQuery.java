@@ -2,6 +2,8 @@ package com.rethinkdb.fluent;
 
 import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.ast.RTTreeKeeper;
+import com.rethinkdb.fluent.types.RTFluentQuery_DBObjectList;
+import com.rethinkdb.fluent.types.RTTopLevelQuery_StringList;
 import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.response.DDLResult;
@@ -74,10 +76,9 @@ public class RTDBQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param tableName table name
      */
-    public RTFluentQuery<List> table(String tableName) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE).withArgs(tableName);
-
-        return new RTFluentQuery<List>(treeKeeper.addData(operation), List.class);
+    public RTFluentQuery_DBObjectList table(String tableName) {
+        // delegate to version in FluentTable (not ideal)
+        return new RTFluentQuery<List>(treeKeeper, List.class).table(tableName);
     }
 
 }
