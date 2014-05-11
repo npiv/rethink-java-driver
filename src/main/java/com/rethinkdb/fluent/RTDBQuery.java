@@ -2,10 +2,11 @@ package com.rethinkdb.fluent;
 
 import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.ast.RTTreeKeeper;
-import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
-import com.rethinkdb.query.option.Durability;
+import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.response.DDLResult;
+
+import java.util.List;
 
 public class RTDBQuery<T> extends RTTopLevelQuery<T> {
     public RTDBQuery(RTTreeKeeper treeKeeper, Class<T> sampleClass) {
@@ -73,10 +74,10 @@ public class RTDBQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param tableName table name
      */
-    public RTFluentQuery<DBObject> table(String tableName) {
+    public RTFluentQuery<List> table(String tableName) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE).withArgs(tableName);
 
-        return new RTFluentQuery(treeKeeper.addData(operation), DBObject.class);
+        return new RTFluentQuery<List>(treeKeeper.addData(operation), List.class);
     }
 
 }

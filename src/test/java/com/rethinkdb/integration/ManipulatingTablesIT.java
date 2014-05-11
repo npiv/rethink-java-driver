@@ -5,7 +5,7 @@ import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
-public class ManipulatingTablesIT extends AbstractITT2est {
+public class ManipulatingTablesIT extends AbstractITTest {
 
     @Test
     public void createListAndDropTable() {

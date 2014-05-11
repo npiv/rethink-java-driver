@@ -5,7 +5,7 @@ import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.ast.RTTreeKeeper;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
-import com.rethinkdb.query.option.Durability;
+import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.response.DMLResult;
 
 import java.util.Arrays;

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class FetchDataIT extends AbstractITT2est {
+public class FetchDataIT extends AbstractITTest {
 
     @Test
     public void testGetByPKString() {

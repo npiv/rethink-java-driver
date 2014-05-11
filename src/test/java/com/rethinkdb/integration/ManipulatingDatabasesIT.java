@@ -3,7 +3,7 @@ package com.rethinkdb.integration;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
-public class ManipulatingDatabasesIT extends AbstractITT2est {
+public class ManipulatingDatabasesIT extends AbstractITTest {
 
     @Test
     public void createListAndDropDatabase() {

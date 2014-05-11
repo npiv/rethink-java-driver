@@ -3,6 +3,7 @@ package com.rethinkdb.proto;
 import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.model.DBObject;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -40,6 +41,18 @@ public class RDatumBuilder {
                     .setType(Q2L.Datum.DatumType.R_BOOL)
                     .setRBool((Boolean) value)
                     .build();
+        }
+
+        if (value instanceof Collection) {
+            Q2L.Datum.Builder arr = builder
+                    .setType(Q2L.Datum.DatumType.R_ARRAY);
+
+            for (Object o : (Collection) value) {
+                arr.addRArray(createDatum(o));
+            }
+
+            return arr.build();
+
         }
 
         if (value instanceof DBObject) {
