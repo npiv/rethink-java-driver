@@ -140,6 +140,15 @@ public class RethinkQueryBuilder {
         return insert(Arrays.asList(dbObject), durability, returnVals, upsert);
     }
 
+    /**
+     * Insert a list of DBObjects into the database
+     *
+     * @param dbObjects dbObjects
+     * @param durability Hard or Soft (leave null for default)
+     * @param returnVals if set to true and in case of a single insert/upsert, the inserted/updated document will be returned.
+     * @param upsert  when set to true, performs a replace if a document with the same primary key exists.
+     * @return InsertResult
+     */
     public RethinkTerminatingQuery<InsertResult> insert(List<DBObject> dbObjects, Durability durability, boolean returnVals, boolean upsert) {
         QueryInformation information = new QueryInformation()
                 .ofTermType(Q2L.Term.TermType.INSERT)

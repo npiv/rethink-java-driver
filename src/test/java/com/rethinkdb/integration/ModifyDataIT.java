@@ -2,6 +2,8 @@ package com.rethinkdb.integration;
 
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
+import com.rethinkdb.query.option.Durability;
+import com.rethinkdb.response.InsertResult;
 import org.fest.assertions.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,7 +14,7 @@ import java.util.List;
 public class ModifyDataIT extends AbstractITTest {
 
     @Test
-    public void testModify() {
+    public void testInsertList() {
         List<DBObject> objects = new ArrayList<DBObject>();
         for (int i = 0; i < 10; i++) {
             objects.add(new DBObjectBuilder().with("abc", i).build());
@@ -27,5 +29,32 @@ public class ModifyDataIT extends AbstractITTest {
 
         Assertions.assertThat(setKeys).contains(0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0);
     }
+
+    @Test
+      public void doubleInsertFailsWithoutUpsert() {
+        InsertResult firstResult =  r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id",1).build()).run(con);
+        InsertResult secondResult = r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id",1).with("field","a").build()).run(con);
+
+        Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
+
+        Assertions.assertThat(secondResult.getReplaced()).isEqualTo(0);
+        Assertions.assertThat(secondResult.getInserted()).isEqualTo(0);
+    }
+
+    @Test
+    public void doubleInsertWorksWithUpsert() {
+        InsertResult firstResult =  r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id", 1).build(), Durability.hard, false, true).run(con);
+        InsertResult secondResult = r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id", 1).with("field","a").build(), Durability.hard, false, true).run(con);
+
+        Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
+
+        Assertions.assertThat(secondResult.getReplaced()).isEqualTo(1);
+        Assertions.assertThat(secondResult.getInserted()).isEqualTo(0);
+    }
+
 
 }
