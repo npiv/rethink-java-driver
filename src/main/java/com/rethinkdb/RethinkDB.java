@@ -5,13 +5,10 @@ import com.rethinkdb.fluent.RTFluentQuery;
 /**
  * The starting point for all interaction with RethinkDB. This singleton corresponds to r
  * in the documentation and is used to open a connection or generate a query. i.e:
- * <p/>
  * <pre>
  *     {@code RethinkDB.r.connect("hostname", 28015); }
  * </pre>
- * <p/>
  * Or
- * <p/>
  * <pre>
  *     {@code RethinkDB.r.dbCreate("test") }
  * </pre>
