@@ -6,8 +6,6 @@ import com.rethinkdb.query.RethinkQueryBuilder;
  * The starting point for all interaction with RethinkDB. This singleton corresponds to r
  * in the documentation and is used to open a connection or generate a query. i.e:
  *
- * <br />
- * <br />
  * <pre>
  *     {@code RethinkDB.r.connect("hostname", 28015); }
  * </pre>
