@@ -4,7 +4,9 @@ import com.rethinkdb.model.DBObjectBuilder;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
-public class FetchDataIT extends AbstractITTest {
+import java.util.List;
+
+public class FetchDataIT extends AbstractITT2est {
 
     @Test
     public void testGetByPKString() {
@@ -26,15 +28,15 @@ public class FetchDataIT extends AbstractITTest {
 
     @Test
     public void testGetAll() {
-        Assertions.assertThat( r.table(tableName).getAll(1, 2).run(con) ).isEmpty();
+        Assertions.assertThat( (List)r.table(tableName).getAll(1, 2).run(con) ).isEmpty();
 
         r.db(dbName).table(tableName).insert( new DBObjectBuilder().with("id", 1).build() ).run(con);
 
-        Assertions.assertThat( r.table(tableName).getAll(1, 2).run(con) ).hasSize(1);
+        Assertions.assertThat( (List)r.table(tableName).getAll(1, 2).run(con) ).hasSize(1);
 
         r.db(dbName).table(tableName).insert( new DBObjectBuilder().with("id", 2).build() ).run(con);
 
-        Assertions.assertThat( r.table(tableName).getAll(1, 2).run(con) ).hasSize(2);
+        Assertions.assertThat( (List)r.table(tableName).getAll(1, 2).run(con) ).hasSize(2);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.rethinkdb;
 
+import com.rethinkdb.ast.RTOperationConverter;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.ProtoUtil;
 import com.rethinkdb.proto.Q2L;
@@ -7,7 +8,10 @@ import com.rethinkdb.proto.RAssocPairBuilder;
 import com.rethinkdb.proto.RTermBuilder;
 import com.rethinkdb.response.DBResultFactory;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class RethinkDBConnection {
+    private static final AtomicInteger tokenGenerator = new AtomicInteger();
 
     private String hostname;
     private String authKey;
@@ -67,6 +71,21 @@ public class RethinkDBConnection {
     public DBObject run(Q2L.Query.Builder query) {
         setDbOptionIfNeeded(query, this.dbName);
         socket.write(query.build().toByteArray());
+        Q2L.Response response = socket.read();
+        return DBResultFactory.convert(response);
+    }
+
+    public DBObject run(Q2L.Term term) {
+        Q2L.Query.Builder queryBuilder = Q2L.Query
+                .newBuilder()
+                .setToken(tokenGenerator.incrementAndGet())
+                .setType(Q2L.Query.QueryType.START)
+                .setQuery(term);
+
+        setDbOptionIfNeeded(queryBuilder, this.dbName);
+
+        socket.write(queryBuilder.build().toByteArray());
+
         Q2L.Response response = socket.read();
         return DBResultFactory.convert(response);
     }

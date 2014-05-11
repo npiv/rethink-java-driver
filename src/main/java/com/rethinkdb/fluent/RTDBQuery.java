@@ -1,0 +1,82 @@
+package com.rethinkdb.fluent;
+
+import com.rethinkdb.ast.RTOperation;
+import com.rethinkdb.ast.RTTreeKeeper;
+import com.rethinkdb.model.DBObject;
+import com.rethinkdb.proto.Q2L;
+import com.rethinkdb.query.option.Durability;
+import com.rethinkdb.response.DDLResult;
+
+public class RTDBQuery<T> extends RTTopLevelQuery<T> {
+    public RTDBQuery(RTTreeKeeper treeKeeper, Class<T> sampleClass) {
+        super(treeKeeper, sampleClass);
+    }
+
+    /**
+     * Create table with tableName, primaryKey, Durability on a specific dataCenter.
+    */
+    public RTTopLevelQuery<DDLResult> tableCreate(String tableName) {
+        return tableCreate(tableName, null, null, null);
+    }
+
+    /**
+     * Create table with tableName, primaryKey, Durability on a specific dataCenter.
+     *
+     * @param tableName  tableName (mandatory)
+     * @param primaryKey primary key (leave null for default)
+     * @param durability durability  (leave null for default)
+     * @param datacenter datacenter  (leave null for default)
+     */
+    public RTTopLevelQuery<DDLResult> tableCreate(String tableName, String primaryKey, Durability durability, String datacenter) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE_CREATE).withArgs(tableName);
+
+        if (datacenter != null) {
+            operation.withOptionalArg("datacenter", datacenter);
+        }
+        if (primaryKey != null) {
+            operation.withOptionalArg("primary_key", primaryKey);
+        }
+        if (durability != null) {
+            operation.withOptionalArg("durability", durability.toString());
+        }
+
+        return new RTTopLevelQuery<DDLResult>(
+                treeKeeper.addData(operation),
+                DDLResult.class
+        );
+    }
+
+    /**
+     * drop table
+     *
+     * @param tableName table name
+     */
+    public RTTopLevelQuery<DDLResult> tableDrop(String tableName) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE_DROP).withArgs(tableName);
+
+        return new RTTopLevelQuery<DDLResult>(
+                treeKeeper.addData(operation),
+                DDLResult.class);
+    }
+
+    /**
+     * list tables
+     */
+    public RTTopLevelQuery_StringList tableList() {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE_LIST);
+
+        return new RTTopLevelQuery_StringList(treeKeeper.addData(operation));
+    }
+
+    /**
+     * Select the table to operate on
+     *
+     * @param tableName table name
+     */
+    public RTFluentQuery<DBObject> table(String tableName) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE).withArgs(tableName);
+
+        return new RTFluentQuery(treeKeeper.addData(operation), DBObject.class);
+    }
+
+}

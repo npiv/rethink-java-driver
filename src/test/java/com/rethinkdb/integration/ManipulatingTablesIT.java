@@ -5,7 +5,7 @@ import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
-public class ManipulatingTablesIT extends AbstractITTest {
+public class ManipulatingTablesIT extends AbstractITT2est {
 
     @Test
     public void createListAndDropTable() {
@@ -21,8 +21,8 @@ public class ManipulatingTablesIT extends AbstractITTest {
         String customPKTable = "customPKTable";
 
         r.db(dbName).tableCreate(customPKTable, "myId", null, null).run(con);
-        DMLResult res1 = r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
-        DMLResult res2 = r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
+        DMLResult res1 = (DMLResult)r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
+        DMLResult res2 = (DMLResult)r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
 
         Assertions.assertThat(res1.getInserted()).isEqualTo(1);
         Assertions.assertThat(res2.getInserted()).isEqualTo(0); // duplicate id

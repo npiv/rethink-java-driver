@@ -15,6 +15,14 @@ public class RAssocPairBuilder {
 
     }
 
+    public static Q2L.Term.AssocPair termPair(String key, Q2L.Term value) {
+        return Q2L.Term.AssocPair.newBuilder()
+                .setKey(key)
+                .setVal(value)
+                .build();
+
+    }
+
     public static Q2L.Query.AssocPair queryPair(String key, Q2L.Term term) {
         return Q2L.Query.AssocPair.newBuilder()
                 .setKey(key)
