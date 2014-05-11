@@ -9,7 +9,8 @@ import java.util.Map;
 public class DBObjectBuilder {
     private DBObject object = new DBObject();
 
-    public DBObjectBuilder() {}
+    public DBObjectBuilder() {
+    }
 
     private DBObjectBuilder(Map<String, Object> map) {
         object = new DBObject(map);

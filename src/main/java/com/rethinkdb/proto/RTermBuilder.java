@@ -56,7 +56,7 @@ public class RTermBuilder {
     }
 
     public static Term tableTerm(String tableName) {
-        return  new RTermBuilder()
+        return new RTermBuilder()
                 .ofType(Q2L.Term.TermType.TABLE)
                 .addArg(RTermBuilder.datumTerm(tableName))
                 .build();

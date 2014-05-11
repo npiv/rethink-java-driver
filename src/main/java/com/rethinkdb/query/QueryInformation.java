@@ -19,6 +19,7 @@ class QueryInformation {
 
     /**
      * Set the query type
+     *
      * @param type query type
      * @return self
      */
@@ -42,6 +43,7 @@ class QueryInformation {
     /**
      * The args of the first inner Term of the query. These correspond to the parameters of the
      * term type
+     *
      * @param args Term args
      * @return self
      */
@@ -57,7 +59,8 @@ class QueryInformation {
 
     /**
      * Add an optional args of the first inner Term of the query.
-     * @param name arg name
+     *
+     * @param name  arg name
      * @param value arg value
      * @return self
      */

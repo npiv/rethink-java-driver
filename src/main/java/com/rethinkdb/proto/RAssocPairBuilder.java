@@ -4,7 +4,8 @@ package com.rethinkdb.proto;
  * Facilitate creation of ProtoBuf AssocPair objects
  */
 public class RAssocPairBuilder {
-    private RAssocPairBuilder() {}
+    private RAssocPairBuilder() {
+    }
 
     public static Q2L.Datum.AssocPair datumPair(String key, Object value) {
         return Q2L.Datum.AssocPair.newBuilder()

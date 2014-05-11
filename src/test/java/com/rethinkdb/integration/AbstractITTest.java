@@ -26,8 +26,7 @@ public abstract class AbstractITTest {
             r.dbCreate(dbName).run(con);
             con.use(dbName);
             r.db(dbName).tableCreate(tableName).run(con);
-        }
-        catch (RethinkDBException ex) {
+        } catch (RethinkDBException ex) {
             ex.printStackTrace();
         }
     }
@@ -36,8 +35,7 @@ public abstract class AbstractITTest {
     public void dropDb() {
         try {
             r.dbDrop(dbName).run(con);
-        }
-        catch (RethinkDBException ex) {
+        } catch (RethinkDBException ex) {
             ex.printStackTrace();
         }
     }

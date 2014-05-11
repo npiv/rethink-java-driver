@@ -1,7 +1,10 @@
 package com.rethinkdb;
 
 import com.rethinkdb.model.DBObject;
-import com.rethinkdb.proto.*;
+import com.rethinkdb.proto.ProtoUtil;
+import com.rethinkdb.proto.Q2L;
+import com.rethinkdb.proto.RAssocPairBuilder;
+import com.rethinkdb.proto.RTermBuilder;
 import com.rethinkdb.response.DBResultFactory;
 
 public class RethinkDBConnection {
@@ -74,9 +77,9 @@ public class RethinkDBConnection {
                     RAssocPairBuilder.queryPair(
                             "db",
                             Q2L.Term.newBuilder()
-                                .setType(Q2L.Term.TermType.DB)
-                                .addArgs(RTermBuilder.datumTerm(db)).build()
-                            )
+                                    .setType(Q2L.Term.TermType.DB)
+                                    .addArgs(RTermBuilder.datumTerm(db)).build()
+                    )
             );
         }
     }

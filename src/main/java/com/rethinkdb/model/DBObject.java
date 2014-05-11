@@ -1,7 +1,5 @@
 package com.rethinkdb.model;
 
-import com.rethinkdb.response.DBResult;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +10,7 @@ import java.util.Map;
  * values.
  */
 @SuppressWarnings("unchecked")
-public class DBObject implements DBResult {
+public class DBObject {
     public static final String CHILDREN = "list";
 
     protected Map<String, Object> map;

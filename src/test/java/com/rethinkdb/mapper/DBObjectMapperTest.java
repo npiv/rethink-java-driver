@@ -27,7 +27,7 @@ public class DBObjectMapperTest {
                             add("s2");
                         }})
                         .with("aString", "string")
-                        .with("aNull", (String)null)
+                        .with("aNull", (String) null)
                         .build()
         );
 
@@ -35,7 +35,7 @@ public class DBObjectMapperTest {
         Assertions.assertThat(testObject.getaDouble()).isEqualTo(2.0);
         Assertions.assertThat(testObject.getaFloat()).isEqualTo(1);
         Assertions.assertThat(testObject.getaString()).isEqualTo("string");
-        Assertions.assertThat(testObject.getaStringList()).containsExactly("s1","s2");
+        Assertions.assertThat(testObject.getaStringList()).containsExactly("s1", "s2");
         Assertions.assertThat(testObject.getaNull()).isNull();
 
     }
@@ -80,8 +80,8 @@ public class DBObjectMapperTest {
                 try {
                     DBObjectMapper.fromDatumObject(datum);
                     Assert.fail("shouldn't work for " + dt);
+                } catch (Exception ex) {
                 }
-                catch (Exception ex) {}
             }
         }
     }

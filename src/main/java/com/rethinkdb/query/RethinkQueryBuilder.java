@@ -2,17 +2,13 @@ package com.rethinkdb.query;
 
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.RethinkDBConstants;
-import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.proto.RTermBuilder;
 import com.rethinkdb.query.option.Durability;
-import com.rethinkdb.response.DBResult;
 import com.rethinkdb.response.DMLResult;
 import com.rethinkdb.response.InsertResult;
-import com.rethinkdb.response.StringListDBResult;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +38,7 @@ public class RethinkQueryBuilder {
                         .ofTermType(Q2L.Term.TermType.TABLE)
                         .withArg(RTermBuilder.dbTerm(dbName))
                         .withArgs(RTermBuilder.datumTerm(tableName))
-                ).run(connection);
+        ).run(connection);
     }
     // todo: should be able to run() after table() but optional
 
@@ -64,9 +60,9 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery<StringListDBResult> dbList() {
-        return new RethinkTerminatingQuery<StringListDBResult>(
-                StringListDBResult.class,
+    public RethinkTerminatingQuery<List> dbList() {
+        return new RethinkTerminatingQuery<List>(
+                List.class,
                 new QueryInformation().ofTermType(Q2L.Term.TermType.DB_LIST)
         );
     }
@@ -77,7 +73,8 @@ public class RethinkQueryBuilder {
 
     /**
      * Create table with tableName, primaryKey, Durability on a specific dataCenter.
-     * @param tableName tableName (mandatory)
+     *
+     * @param tableName  tableName (mandatory)
      * @param primaryKey primary key (leave null for default)
      * @param durability durability  (leave null for default)
      * @param datacenter datacenter  (leave null for default)
@@ -120,9 +117,9 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery<StringListDBResult> tableList() {
-        return new RethinkTerminatingQuery<StringListDBResult>(
-                StringListDBResult.class,
+    public RethinkTerminatingQuery<List> tableList() {
+        return new RethinkTerminatingQuery<List>(
+                List.class,
                 new QueryInformation()
                         .ofTermType(Q2L.Term.TermType.TABLE_LIST)
                         .withArgs(
@@ -150,8 +147,7 @@ public class RethinkQueryBuilder {
 
         if (dbObjects.size() == 1) {
             information.withArg(RTermBuilder.datumTerm(dbObjects.get(0)));
-        }
-        else {
+        } else {
             Q2L.Term.Builder builder = Q2L.Term.newBuilder().setType(Q2L.Term.TermType.MAKE_ARRAY);
             for (DBObject dbObject : dbObjects) {
                 builder.addArgs(RTermBuilder.datumTerm(dbObject));
@@ -175,7 +171,7 @@ public class RethinkQueryBuilder {
         );
     }
 
-    public RethinkTerminatingQuery<InsertResult> getAll(String key,String... keys) {
+    public RethinkTerminatingQuery<InsertResult> getAll(String key, String... keys) {
         QueryInformation information = new QueryInformation()
                 .ofTermType(Q2L.Term.TermType.GET_ALL);
 

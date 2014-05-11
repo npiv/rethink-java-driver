@@ -1,6 +1,6 @@
 package com.rethinkdb.response;
 
-public class DMLResult implements DBResult {
+public class DMLResult {
     private int created;
     private int dropped;
 

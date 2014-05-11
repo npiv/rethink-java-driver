@@ -15,6 +15,7 @@ public class DBObjectMapper {
 
     /**
      * Maps a ProtoBuf Datum object to a DBObject
+     *
      * @param datum datum
      * @return DBObject
      */
@@ -28,7 +29,7 @@ public class DBObjectMapper {
         }
 
         if (datum.getType() == Q2L.Datum.DatumType.R_ARRAY) {
-            return new DBObjectBuilder().with(DBObject.CHILDREN,  makeArray(datum.getRArrayList())).build();
+            return new DBObjectBuilder().with(DBObject.CHILDREN, makeArray(datum.getRArrayList())).build();
         }
 
         throw new RethinkDBException("Can't map datum to a DBObject. Got : " + datum.getType());
@@ -37,6 +38,7 @@ public class DBObjectMapper {
 
     /**
      * Maps a list of Datum Objects to a DBObject
+     *
      * @param datums datum objects
      * @return DBObject
      */
@@ -78,9 +80,10 @@ public class DBObjectMapper {
 
     /**
      * Populates the fields in to based on values out of from
-     * @param to the object to map into
+     *
+     * @param to   the object to map into
      * @param from the object to map from
-     * @param <T> the type of the into object
+     * @param <T>  the type of the into object
      * @return the into object
      */
     public static <T> T populateObject(T to, DBObject from) {
@@ -113,4 +116,7 @@ public class DBObjectMapper {
         return from.getAsMap().get(toField.getName());
     }
 
+    public static <T> T populateList(DBObject dbObject) {
+        return dbObject.get(DBObject.CHILDREN);
+    }
 }

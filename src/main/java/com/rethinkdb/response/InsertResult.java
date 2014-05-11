@@ -1,12 +1,10 @@
 package com.rethinkdb.response;
 
-import com.rethinkdb.mapper.DBObjectMapper;
 import com.rethinkdb.model.DBObject;
-import com.rethinkdb.proto.Q2L;
 
 import java.util.List;
 
-public class InsertResult implements DBResult {
+public class InsertResult {
     private int inserted;
     private int replaced;
     private int unchanged;

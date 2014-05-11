@@ -2,8 +2,8 @@ package com.rethinkdb.integration;
 
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.fest.assertions.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class ModifyDataIT extends AbstractITTest {
 
         DBObject result = r.db(dbName).table(tableName).run(con);
         // TODO make a DBObjectList
-        Assertions.assertThat(((List)result.get(DBObject.CHILDREN)).get(0)).isEqualTo(0);
+        Assertions.assertThat(((List) result.get(DBObject.CHILDREN)).get(0)).isEqualTo(0);
     }
 
 }

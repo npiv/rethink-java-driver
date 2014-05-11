@@ -5,23 +5,23 @@ import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.mapper.DBObjectMapper;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
-import com.rethinkdb.response.DBResult;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A query that has no further actions available upon it except run
- *
+ * 
  * This object is created by RethinkQueryBuilder when the query is complete
  */
-public class RethinkTerminatingQuery<T extends DBResult> {
+public class RethinkTerminatingQuery<T> {
     private static final AtomicInteger tokenFactory = new AtomicInteger();
-    private final Class<? extends DBResult> resultClazz;
+    private final Class<T> resultClazz;
 
     private QueryInformation queryInformation;
 
     public RethinkTerminatingQuery(
-            Class<? extends DBResult> resultClazz,
+            Class<T> resultClazz,
             QueryInformation queryInformation
     ) {
         this.resultClazz = resultClazz;
@@ -30,6 +30,7 @@ public class RethinkTerminatingQuery<T extends DBResult> {
 
     /**
      * run the query on the given connection
+     *
      * @param connection connection
      * @return DBResult
      */
@@ -43,10 +44,11 @@ public class RethinkTerminatingQuery<T extends DBResult> {
         DBObject dbObject = connection.run(query);
         try {
             if (resultClazz.equals(DBObject.class)) {
-                return (T)dbObject;
-            }
-            else {
-                return (T) DBObjectMapper.populateObject(resultClazz.newInstance(), dbObject);
+                return (T) dbObject;
+            } else if (resultClazz.equals(List.class)) {
+                return DBObjectMapper.populateList(dbObject);
+            } else {
+                return DBObjectMapper.populateObject(resultClazz.newInstance(), dbObject);
             }
         } catch (InstantiationException e) {
             throw new RethinkDBException("DBResult must have default constructor " + resultClazz, e);

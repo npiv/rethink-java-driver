@@ -23,10 +23,12 @@ public class RethinkDB extends RethinkQueryBuilder {
      */
     public static RethinkDB r = new RethinkDB();
 
-    private RethinkDB() {}
+    private RethinkDB() {
+    }
 
     /**
      * Connect with default hostname and default port and default timeout
+     *
      * @return connection
      */
     public RethinkDBConnection connect() {
@@ -35,6 +37,7 @@ public class RethinkDB extends RethinkQueryBuilder {
 
     /**
      * connect with given hostname and default port and default timeout
+     *
      * @param hostname hostname
      * @return connection
      */
@@ -44,8 +47,9 @@ public class RethinkDB extends RethinkQueryBuilder {
 
     /**
      * connect with given hostname and port and default timeout
+     *
      * @param hostname hostname
-     * @param port port
+     * @param port     port
      * @return connection
      */
     public RethinkDBConnection connect(String hostname, int port) {
@@ -54,9 +58,10 @@ public class RethinkDB extends RethinkQueryBuilder {
 
     /**
      * connect with given hostname, port and authentication key and default timeout
+     *
      * @param hostname hostname
-     * @param port port
-     * @param authKey authentication key
+     * @param port     port
+     * @param authKey  authentication key
      * @return connection
      */
     public RethinkDBConnection connect(String hostname, int port, String authKey) {
@@ -65,17 +70,16 @@ public class RethinkDB extends RethinkQueryBuilder {
 
     /**
      * connect with given hostname, port, authentication key and timeout
+     *
      * @param hostname hostname
-     * @param port port
-     * @param authKey authentication key
-     * @param timeout the maximum time to wait attempting to connect
+     * @param port     port
+     * @param authKey  authentication key
+     * @param timeout  the maximum time to wait attempting to connect
      * @return connection
      */
     public RethinkDBConnection connect(String hostname, int port, String authKey, int timeout) {
         return new RethinkDBConnection(hostname, port, authKey, timeout);
     }
-
-
 
 
 }
