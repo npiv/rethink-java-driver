@@ -1,0 +1,22 @@
+System.out.println(con.run(
+            Q2L.Query.newBuilder()
+            .setType(Q2L.Query.QueryType.START)
+            .setToken(1)
+            .setQuery(
+                Q2L.Term.newBuilder()
+                .setType(Q2L.Term.TermType.UPDATE)
+                .addArgs(
+                    new RTermBuilder()
+                    .ofType(Q2L.Term.TermType.TABLE)
+                    .addArg(RTermBuilder.dbTerm("test"))
+                    .addArg(RTermBuilder.datumTerm("test"))
+                    .build()
+                    )
+                .addArgs(
+                    RTermBuilder.datumTerm(
+                        new DBObjectBuilder().with("abba","gogogo").build()
+                        )
+                    )
+
+                )
+    ));

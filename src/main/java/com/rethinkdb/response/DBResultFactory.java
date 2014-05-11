@@ -24,7 +24,7 @@ public class DBResultFactory {
             case CLIENT_ERROR:
             case COMPILE_ERROR:
             case RUNTIME_ERROR:
-                throw new RethinkDBException(response.getResponse(0).getRStr());
+                throw new RethinkDBException(response.getType() + ": " + response.getResponse(0).getRStr());
 
             default:
                 throw new RethinkDBException("Unknown Response Type: " + response.getType());

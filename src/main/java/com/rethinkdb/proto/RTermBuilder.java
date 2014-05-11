@@ -48,7 +48,7 @@ public class RTermBuilder {
         return createDatumTerm(payload);
     }
 
-    protected static Term createDatumTerm(Object value) {
+    public static Term createDatumTerm(Object value) {
         return Term.newBuilder()
                 .setType(Term.TermType.DATUM)
                 .setDatum(RDatumBuilder.createDatum(value))

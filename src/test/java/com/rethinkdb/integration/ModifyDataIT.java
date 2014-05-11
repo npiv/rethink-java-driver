@@ -3,9 +3,8 @@ package com.rethinkdb.integration;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
 import com.rethinkdb.query.option.Durability;
-import com.rethinkdb.response.InsertResult;
+import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -32,10 +31,10 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
       public void doubleInsertFailsWithoutUpsert() {
-        InsertResult firstResult =  r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id",1).build()).run(con);
-        InsertResult secondResult = r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id",1).with("field","a").build()).run(con);
+        DMLResult firstResult =  r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+        DMLResult secondResult = r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id", 1).with("field", "a").build()).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
 
@@ -45,10 +44,10 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void doubleInsertWorksWithUpsert() {
-        InsertResult firstResult =  r.db(dbName).table(tableName)
+        DMLResult firstResult =  r.db(dbName).table(tableName)
                 .insert(new DBObjectBuilder().with("id", 1).build(), Durability.hard, false, true).run(con);
-        InsertResult secondResult = r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id", 1).with("field","a").build(), Durability.hard, false, true).run(con);
+        DMLResult secondResult = r.db(dbName).table(tableName)
+                .insert(new DBObjectBuilder().with("id", 1).with("field", "a").build(), Durability.hard, false, true).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
 

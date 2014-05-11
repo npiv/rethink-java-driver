@@ -1,7 +1,7 @@
 package com.rethinkdb.integration;
 
 import com.rethinkdb.model.DBObjectBuilder;
-import com.rethinkdb.response.InsertResult;
+import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
@@ -21,8 +21,8 @@ public class ManipulatingTablesIT extends AbstractITTest {
         String customPKTable = "customPKTable";
 
         r.db(dbName).tableCreate(customPKTable, "myId", null, null).run(con);
-        InsertResult res1 = r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
-        InsertResult res2 = r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
+        DMLResult res1 = r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
+        DMLResult res2 = r.db(dbName).table(customPKTable).insert(new DBObjectBuilder().with("myId", 1).build()).run(con);
 
         Assertions.assertThat(res1.getInserted()).isEqualTo(1);
         Assertions.assertThat(res2.getInserted()).isEqualTo(0); // duplicate id

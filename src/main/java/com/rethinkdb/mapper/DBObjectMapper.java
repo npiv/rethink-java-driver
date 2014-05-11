@@ -20,6 +20,10 @@ public class DBObjectMapper {
      * @return DBObject
      */
     public static DBObject fromDatumObject(Q2L.Datum datum) {
+        if (datum.getType() == Q2L.Datum.DatumType.R_NULL) {
+            return null;
+        }
+
         if (datum.getType() == Q2L.Datum.DatumType.R_OBJECT) {
             Map<String, Object> repr = new HashMap<String, Object>();
             for (Q2L.Datum.AssocPair assocPair : datum.getRObjectList()) {
