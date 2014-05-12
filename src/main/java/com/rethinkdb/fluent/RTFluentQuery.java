@@ -1,6 +1,7 @@
 package com.rethinkdb.fluent;
 
 import com.rethinkdb.ast.RTData;
+import com.rethinkdb.ast.RTLambdaConverter;
 import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.ast.RTTreeKeeper;
 import com.rethinkdb.fluent.types.RTFluentQuery_DBObjectList;
@@ -217,7 +218,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
 
     public RTFluentQuery_ObjectList map(DBLambda lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP)
-                .withArgs(lambda.getOperation());
+                .withArgs(RTLambdaConverter.getOperation(lambda));
 
         return new RTFluentQuery_ObjectList(treeKeeper.addData(operation));
     }
