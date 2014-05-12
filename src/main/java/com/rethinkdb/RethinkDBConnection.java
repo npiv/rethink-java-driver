@@ -1,16 +1,21 @@
 package com.rethinkdb;
 
 import com.rethinkdb.ast.RTOperationConverter;
+import com.rethinkdb.fluent.RTFluentQuery;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.ProtoUtil;
 import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.proto.RAssocPairBuilder;
 import com.rethinkdb.proto.RTermBuilder;
 import com.rethinkdb.response.DBResultFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RethinkDBConnection {
+    private static final Logger logger = LoggerFactory.getLogger(RTFluentQuery.class);
+
     private static final AtomicInteger tokenGenerator = new AtomicInteger();
 
     private String hostname;
@@ -67,15 +72,7 @@ public class RethinkDBConnection {
         this.dbName = dbName;
     }
 
-    // TODO: this needs to be protected
-    public DBObject run(Q2L.Query.Builder query) {
-        setDbOptionIfNeeded(query, this.dbName);
-        socket.write(query.build().toByteArray());
-        Q2L.Response response = socket.read();
-        return DBResultFactory.convert(response);
-    }
-
-    public DBObject run(Q2L.Term term) {
+    public <T> T run(Q2L.Term term) {
         Q2L.Query.Builder queryBuilder = Q2L.Query
                 .newBuilder()
                 .setToken(tokenGenerator.incrementAndGet())
@@ -83,6 +80,8 @@ public class RethinkDBConnection {
                 .setQuery(term);
 
         setDbOptionIfNeeded(queryBuilder, this.dbName);
+
+        logger.debug("running {} ", queryBuilder.build());
 
         socket.write(queryBuilder.build().toByteArray());
 

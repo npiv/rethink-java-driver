@@ -1,5 +1,7 @@
 package com.rethinkdb.ast;
 
+import com.rethinkdb.proto.Q2L;
+
 public class RTTreeKeeper {
     private RTOperation tree = null;
 

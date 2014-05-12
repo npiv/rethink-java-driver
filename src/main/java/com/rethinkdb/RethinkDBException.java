@@ -16,7 +16,4 @@ public class RethinkDBException extends RuntimeException {
         super(cause);
     }
 
-    public RethinkDBException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

@@ -1,34 +1,36 @@
 package com.rethinkdb.ast;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.proto.Q2L;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RTOperation {
     private Q2L.Term.TermType termType;
-    private List<Object> args = Lists.newArrayList();
-    private Map<String, Object> optionalArgs = Maps.newHashMap();
+    private List<Object> args = new ArrayList<Object>();
+    private Map<String, Object> optionalArgs = new HashMap<String, Object>();
 
     public RTOperation(Q2L.Term.TermType termType) {
         this.termType = termType;
     }
 
-    protected RTOperation pushArg(Object arg) {
+    public RTOperation pushArg(Object arg) {
         this.args.add(0, arg);
         return this;
     }
 
     public RTOperation withArgs(Object... args) {
-        this.args.addAll(Arrays.asList(args));
+        for (Object arg : args) {
+            this.args.add(arg);
+        }
         return this;
     }
 
     public RTOperation withOptionalArg(String key, Object value) {
-        this.optionalArgs.put(key,value);
+        this.optionalArgs.put(key, value);
         return this;
     }
 
