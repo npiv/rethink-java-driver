@@ -274,6 +274,28 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTFluentQuery(treeKeeper.addData(operation));
     }
 
+    public RTFluentQuery upcase() {
+        return new RTFluentQuery(treeKeeper.addData(new RTOperation(Q2L.Term.TermType.UPCASE)));
+    }
+
+    public RTFluentQuery downcase() {
+        return new RTFluentQuery(treeKeeper.addData(new RTOperation(Q2L.Term.TermType.DOWNCASE)));
+    }
+
+    public RTFluentQuery split() {
+        return new RTFluentQuery(treeKeeper.addData(new RTOperation(Q2L.Term.TermType.SPLIT)));
+    }
+
+    public RTFluentQuery split(String separator) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.SPLIT).withArgs(separator);
+        return new RTFluentQuery(treeKeeper.addData(operation));
+    }
+
+    public RTFluentQuery split(String separator, int maxTimes) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.SPLIT).withArgs(separator, maxTimes);
+        return new RTFluentQuery(treeKeeper.addData(operation));
+    }
+
     public RTFluentQuery add(double op) {
         return makeOperation(Q2L.Term.TermType.ADD, op);
     }
