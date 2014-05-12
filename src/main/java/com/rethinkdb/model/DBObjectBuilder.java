@@ -30,6 +30,11 @@ public class DBObjectBuilder {
         return this;
     }
 
+    public DBObjectBuilder with(String key, Object value) {
+        object.map.put(key, value);
+        return this;
+    }
+
     public <T> DBObjectBuilder with(String key, List<T> value) {
         object.map.put(key, value);
         return this;

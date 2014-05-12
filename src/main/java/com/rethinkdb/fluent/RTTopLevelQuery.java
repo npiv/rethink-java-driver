@@ -15,7 +15,7 @@ public class RTTopLevelQuery<T> {
     protected static final Logger logger = LoggerFactory.getLogger(RTFluentQuery.class);
 
     protected Class<T> sampleClass;
-    protected RTTreeKeeper treeKeeper;
+    public RTTreeKeeper treeKeeper;
 
     protected RTTopLevelQuery(RTTreeKeeper treeKeeper, Class<T> sampleClass) {
         this.treeKeeper = treeKeeper;

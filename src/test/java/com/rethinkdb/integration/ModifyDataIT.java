@@ -56,4 +56,34 @@ public class ModifyDataIT extends AbstractITTest {
     }
 
 
+    @Test
+    public void updateFromTable() {
+        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 2).build()).run(con);
+
+        DMLResult result = r.db(dbName).table(tableName).update(new DBObjectBuilder().with("name", "test").build()).run(con);
+
+        Assertions.assertThat(result.getReplaced()).isEqualTo(2);
+    }
+
+    @Test
+    public void updateFromGet() {
+        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+
+        DMLResult result = r.db(dbName).table(tableName).get(1).update(new DBObjectBuilder().with("name", "test").build()).run(con);
+
+        Assertions.assertThat(result.getReplaced()).isEqualTo(1);
+    }
+
+    @Test
+    public void updateWithIncrementFunction() {
+        r.db(dbName).table(tableName).insert(
+                new DBObjectBuilder().with("id", 1).with("val",1).build()
+        ).run(con);
+
+        System.out.println(r.db(dbName).table(tableName).update(
+            new DBObjectBuilder().with("val", r.row("val").add(10)).build()
+        ).run(con));
+    }
+
 }

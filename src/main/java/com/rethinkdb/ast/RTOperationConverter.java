@@ -1,7 +1,5 @@
 package com.rethinkdb.ast;
 
-import com.rethinkdb.ast.RTData;
-import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.proto.RAssocPairBuilder;
 import com.rethinkdb.proto.RDatumBuilder;
@@ -21,9 +19,8 @@ public class RTOperationConverter {
 
         for (Object o : operation.getArgs()) {
             if (o instanceof RTOperation) {
-                builder.addArgs(toProtoBufTerm((RTOperation)o));
-            }
-            else {
+                builder.addArgs(toProtoBufTerm((RTOperation) o));
+            } else {
                 builder.addArgs(RTermBuilder.createDatumTerm(o));
             }
         }
@@ -38,5 +35,9 @@ public class RTOperationConverter {
         }
 
         return builder.build();
+    }
+
+    private static void wrapAsFunction(RTData operation) {
+
     }
 }

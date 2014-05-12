@@ -75,9 +75,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
     }
 
     public RTFluentQuery<DMLResult> update(DBObject object) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.UPDATE)
-                .withArgs(new RTData<DBObject>(object));
-
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.UPDATE).withArgs(new RTData<DBObject>(object));
         return new RTFluentQuery(treeKeeper.addData(operation), DMLResult.class);
     }
 
@@ -215,4 +213,13 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTFluentQuery<List>(treeKeeper.addData(operation), List.class);
     }
 
+    public RTFluentQuery row(String fieldName) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.IMPLICIT_VAR).withArgs(fieldName);
+        return new RTFluentQuery(treeKeeper.addData(operation), Object.class);
+    }
+
+    public RTFluentQuery add(double addition) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.ADD).withArgs(addition);
+        return new RTFluentQuery(treeKeeper.addData(operation), Object.class);
+    }
 }
