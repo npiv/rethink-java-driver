@@ -1,8 +1,6 @@
 package com.rethinkdb.response;
 
 import com.rethinkdb.RethinkDBException;
-import com.rethinkdb.mapper.DBObjectMapper;
-import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 
 public class DBResultFactory {
@@ -10,12 +8,12 @@ public class DBResultFactory {
     private DBResultFactory() {
     }
 
-    public static DBObject convert(Q2L.Response response) {
+    public static <T> T convert(Q2L.Response response) {
         switch (response.getType()) {
             case SUCCESS_ATOM:
-                return DBObjectMapper.fromDatumObject(response.getResponse(0));
+                return DBResponseMapper.fromDatumObject(response.getResponse(0));
             case SUCCESS_SEQUENCE:
-                return DBObjectMapper.fromDatumObjectList(response.getResponseList());
+                return (T) DBResponseMapper.fromDatumObjectList(response.getResponseList());
 
             case WAIT_COMPLETE:
             case SUCCESS_PARTIAL:

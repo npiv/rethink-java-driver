@@ -9,21 +9,19 @@ public class RTFluentRow extends RTTopLevelQuery {
     public RTFluentRow() {
     }
 
-    public RTFluentRow(RTTreeKeeper treeKeeper, Class sampleClass) {
-        super(treeKeeper, sampleClass);
-    }
+    public RTFluentRow(RTTreeKeeper treeKeeper) { super(treeKeeper); }
 
     private RTFluentRow makeLambdaOperation(Q2L.Term.TermType type, Object arg) {
         RTOperation operation = new RTOperation(type)
                 .withArgs(new RTOperation(Q2L.Term.TermType.VAR).withArgs(1))
                 .withArgs(arg);
 
-        return new RTFluentRow(treeKeeper.addData(operation), Object.class);
+        return new RTFluentRow(treeKeeper.addData(operation));
     }
 
     private RTFluentRow makeOperation(Q2L.Term.TermType type, Object... arg) {
         RTOperation operation = new RTOperation(type).withArgs(arg);
-        return new RTFluentRow(treeKeeper.addData(operation), Object.class);
+        return new RTFluentRow(treeKeeper.addData(operation));
     }
 
     public RTFluentRow field(String fieldName) {

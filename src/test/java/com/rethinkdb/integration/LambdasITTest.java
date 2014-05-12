@@ -1,11 +1,8 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.fluent.Lambda;
 import com.rethinkdb.fluent.RTFluentRow;
 import com.rethinkdb.model.DBLambda;
-import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
-import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +22,7 @@ public class LambdasITTest extends AbstractITTest {
 
     @Test
     public void testMap() {
-        List<Double> ages = r.db(dbName).table(tableName).map(new DBLambda() {
+        List<Double> ages = r.db(dbName).table(tableName).mapToDouble(new DBLambda() {
             @Override
             public RTFluentRow apply(RTFluentRow row) {
                 return row.field("age").add(20);

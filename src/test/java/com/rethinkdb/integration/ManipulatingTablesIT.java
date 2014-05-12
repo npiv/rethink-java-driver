@@ -1,7 +1,7 @@
 package com.rethinkdb.integration;
 
 import com.rethinkdb.model.DBObjectBuilder;
-import com.rethinkdb.response.DMLResult;
+import com.rethinkdb.response.model.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 

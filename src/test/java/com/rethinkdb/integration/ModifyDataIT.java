@@ -5,9 +5,8 @@ import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
 import com.rethinkdb.fluent.option.Durability;
-import com.rethinkdb.response.DMLResult;
+import com.rethinkdb.response.model.DMLResult;
 import org.fest.assertions.Assertions;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -72,7 +72,7 @@ public class RethinkDBConnection {
         this.dbName = dbName;
     }
 
-    public DBObject run(Q2L.Term term) {
+    public <T> T run(Q2L.Term term) {
         Q2L.Query.Builder queryBuilder = Q2L.Query
                 .newBuilder()
                 .setToken(tokenGenerator.incrementAndGet())
