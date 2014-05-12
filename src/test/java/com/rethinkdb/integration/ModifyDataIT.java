@@ -75,15 +75,4 @@ public class ModifyDataIT extends AbstractITTest {
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
     }
 
-    @Test
-    public void updateWithIncrementFunction() {
-        r.db(dbName).table(tableName).insert(
-                new DBObjectBuilder().with("id", 1).with("val",1).build()
-        ).run(con);
-
-        System.out.println(r.db(dbName).table(tableName).update(
-            new DBObjectBuilder().with("val", r.row("val").add(10)).build()
-        ).run(con));
-    }
-
 }

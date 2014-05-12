@@ -4,7 +4,9 @@ import com.rethinkdb.ast.RTData;
 import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.ast.RTTreeKeeper;
 import com.rethinkdb.fluent.types.RTFluentQuery_DBObjectList;
+import com.rethinkdb.fluent.types.RTFluentQuery_ObjectList;
 import com.rethinkdb.fluent.types.RTTopLevelQuery_StringList;
+import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.fluent.option.Durability;
@@ -213,13 +215,11 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTFluentQuery<List>(treeKeeper.addData(operation), List.class);
     }
 
-    public RTFluentQuery row(String fieldName) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.IMPLICIT_VAR).withArgs(fieldName);
-        return new RTFluentQuery(treeKeeper.addData(operation), Object.class);
+    public RTFluentQuery_ObjectList map(DBLambda lambda) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP)
+                .withArgs(lambda.getOperation());
+
+        return new RTFluentQuery_ObjectList(treeKeeper.addData(operation));
     }
 
-    public RTFluentQuery add(double addition) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.ADD).withArgs(addition);
-        return new RTFluentQuery(treeKeeper.addData(operation), Object.class);
-    }
 }

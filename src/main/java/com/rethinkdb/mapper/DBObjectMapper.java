@@ -24,6 +24,13 @@ public class DBObjectMapper {
             return null;
         }
 
+        if (
+                datum.getType() == Q2L.Datum.DatumType.R_NUM ||
+                datum.getType() == Q2L.Datum.DatumType.R_STR
+           ) {
+            return new DBObjectBuilder().with(DBObject.VALUE, handleType(datum)).build();
+        }
+
         if (datum.getType() == Q2L.Datum.DatumType.R_OBJECT) {
             Map<String, Object> repr = new HashMap<String, Object>();
             for (Q2L.Datum.AssocPair assocPair : datum.getRObjectList()) {
