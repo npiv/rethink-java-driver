@@ -1,6 +1,6 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.fluent.RTFluentRow;
+import com.rethinkdb.fluent.RTFluentQuery;
 import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObjectBuilder;
 import org.fest.assertions.Assertions;
@@ -21,30 +21,30 @@ public class FilteringIT extends AbstractITTest {
     @Test
     public void testGT() {
         Assertions.assertThat(
-            r.db(dbName).table(tableName).filter(new DBLambda() {
+            r.db(dbName).table(tableName).filter(r.lambda(new DBLambda() {
                 @Override
-                public RTFluentRow apply(RTFluentRow row) {
+                public RTFluentQuery apply(RTFluentQuery row) {
                     return row.field("age").gt(30);
                 }
-            }).run(con).size()
+            })).run(con).size()
         ).isEqualTo(1);
     }
 
     @Test
     public void testGTandLT() {
         Assertions.assertThat(
-                r.db(dbName).table(tableName).filter(new DBLambda() {
+                r.db(dbName).table(tableName).filter(r.lambda(new DBLambda() {
                     @Override
-                    public RTFluentRow apply(RTFluentRow row) {
-                        return row.or(
-                            row.and(
-                                    row.field("age").gt(20),
-                                    row.field("age").lt(30)
-                            ),
-                            row.field("name").eq("heman")
+                    public RTFluentQuery apply(RTFluentQuery row) {
+                        return r.or(
+                                r.and(
+                                        row.field("age").gt(20),
+                                        row.field("age").lt(30)
+                                ),
+                                row .field("name").eq("heman")
                         );
                     }
-                }).run(con).size()
+                })).run(con).size()
         ).isEqualTo(2);
     }
 }

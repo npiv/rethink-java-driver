@@ -9,8 +9,8 @@ import com.rethinkdb.fluent.types.RTTopLevelQuery_Types;
 import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
-import com.rethinkdb.response.model.DMLResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -151,8 +151,8 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTTopLevelQuery_Types.T_DMLResult(treeKeeper.addData(operation));
     }
 
-    public T_DMLResult replace(DBLambda lambda) {
-        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.REPLACE, lambda);
+    public T_DMLResult replace(RTFluentQuery lambda) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(lambda.treeKeeper.getTree());
         return new T_DMLResult(treeKeeper.addData(operation));
     }
 
@@ -230,25 +230,118 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_DoubleListResult mapToDouble(DBLambda lambda) {
-        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.MAP, lambda);
+    public RTFluentLevelQuery_Types.T_DoubleListResult mapToDouble(RTFluentQuery lambda) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentLevelQuery_Types.T_DoubleListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_GenericListResult map(DBLambda lambda) {
-        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.MAP, lambda);
+    public RTFluentLevelQuery_Types.T_GenericListResult map(RTFluentQuery lambda) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentLevelQuery_Types.T_GenericListResult(treeKeeper.addData(operation));
     }
 
-
-    public RTFluentLevelQuery_Types.T_ObjectListResult filter(DBLambda lambda) {
-        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.FILTER, lambda);
+    public RTFluentLevelQuery_Types.T_ObjectListResult filter(RTFluentQuery lambda) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.FILTER).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
     }
 
     public RTFluentLevelQuery_Types.T_ObjectListResult without(String field) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.WITHOUT).withArgs(field);
         return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
+    }
+
+    public RTFluentQuery lambda(DBLambda lambda) {
+        List<Object> params = new ArrayList<Object>();
+        params.add(1);
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.FUNC).withArgs(params);
+
+        RTFluentQuery varQuery = new RTFluentQuery(new RTTreeKeeper().addData(new RTOperation(Q2L.Term.TermType.VAR).withArgs(new RTData(1))));
+
+        RTOperation applied = lambda.apply(varQuery).treeKeeper.getTree();
+
+        return new RTFluentQuery(treeKeeper.addData(operation.withArgs(applied)));
+    }
+
+    public RTFluentQuery field(String fieldName) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.GET_FIELD).withArgs(fieldName);
+        return new RTFluentQuery(treeKeeper.addData(operation));
+    }
+
+    private RTFluentQuery makeOperation(Q2L.Term.TermType type, Object... arg) {
+        RTOperation operation = new RTOperation(type).withArgs(arg);
+        return new RTFluentQuery(treeKeeper.addData(operation));
+    }
+
+    public RTFluentQuery add(double op) {
+        return makeOperation(Q2L.Term.TermType.ADD, op);
+    }
+
+    public RTFluentQuery add(String op) {
+        return makeOperation(Q2L.Term.TermType.ADD, op);
+    }
+
+    public RTFluentQuery subtract(double op) {
+        return makeOperation(Q2L.Term.TermType.SUB, op);
+    }
+
+    public RTFluentQuery multiply(double op) {
+        return makeOperation(Q2L.Term.TermType.MUL, op);
+    }
+
+    public RTFluentQuery divide(double op) {
+        return makeOperation(Q2L.Term.TermType.DIV, op);
+    }
+
+    public RTFluentQuery modulus(double op) {
+        return makeOperation(Q2L.Term.TermType.MOD, op);
+    }
+
+    public RTFluentQuery and(double op) {
+        return makeOperation(Q2L.Term.TermType.MOD, op);
+    }
+
+    public RTFluentQuery lt(Object... o) {
+        return makeOperation(Q2L.Term.TermType.LT, o);
+    }
+
+    public RTFluentQuery gt(Object... o) {
+        return makeOperation(Q2L.Term.TermType.GT, o);
+    }
+
+    public RTFluentQuery le(Object... o) {
+        return makeOperation(Q2L.Term.TermType.LE, o);
+    }
+
+    public RTFluentQuery ge(Object... o) {
+        return makeOperation(Q2L.Term.TermType.GE, o);
+    }
+
+    public RTFluentQuery eq(Object... o) {
+        return makeOperation(Q2L.Term.TermType.EQ, o);
+    }
+
+    public RTFluentQuery ne(Object... o) {
+        return makeOperation(Q2L.Term.TermType.NE, o);
+    }
+
+    public RTFluentQuery not(Object... o) {
+        return makeOperation(Q2L.Term.TermType.NOT, o);
+    }
+
+    public RTFluentQuery all(Object... o) {
+        return makeOperation(Q2L.Term.TermType.ALL, o);
+    }
+
+    public RTFluentQuery and(Object... o) {
+        return makeOperation(Q2L.Term.TermType.ALL, o);
+    }
+
+    public RTFluentQuery any(Object... o) {
+        return makeOperation(Q2L.Term.TermType.ANY, o);
+    }
+
+    public RTFluentQuery or(Object... o) {
+        return makeOperation(Q2L.Term.TermType.ANY, o);
     }
 
 }

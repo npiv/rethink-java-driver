@@ -1,6 +1,6 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.fluent.RTFluentRow;
+import com.rethinkdb.fluent.RTFluentQuery;
 import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObjectBuilder;
 import org.fest.assertions.Assertions;
@@ -22,12 +22,12 @@ public class LambdasITTest extends AbstractITTest {
 
     @Test
     public void testMap() {
-        List<Double> ages = r.db(dbName).table(tableName).mapToDouble(new DBLambda() {
+        List<Double> ages = r.db(dbName).table(tableName).mapToDouble(r.lambda(new DBLambda() {
             @Override
-            public RTFluentRow apply(RTFluentRow row) {
+            public RTFluentQuery apply(RTFluentQuery row) {
                 return row.field("age").add(20);
             }
-        }).run(con);
+        })).run(con);
 
         Assertions.assertThat(ages).contains(50.0, 43.0, 75.0);
     }

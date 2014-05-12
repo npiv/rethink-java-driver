@@ -1,10 +1,10 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.fluent.RTFluentRow;
+import com.rethinkdb.fluent.RTFluentQuery;
+import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
-import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.response.model.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
@@ -25,14 +25,14 @@ public class ModifyDataIT extends AbstractITTest {
         List<DBObject> result = r.db(dbName).table(tableName).run(con);
         List<Double> setKeys = new ArrayList<Double>();
         for (DBObject dbObject : result) {
-            setKeys.add((Double)dbObject.get("abc"));
+            setKeys.add((Double) dbObject.get("abc"));
         }
 
-        Assertions.assertThat(setKeys).contains(0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0);
+        Assertions.assertThat(setKeys).contains(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
     }
 
     @Test
-      public void doubleInsertFailsWithoutUpsert() {
+    public void doubleInsertFailsWithoutUpsert() {
         DMLResult firstResult = r.db(dbName).table(tableName)
                 .insert(new DBObjectBuilder().with("id", 1).build()).run(con);
         DMLResult secondResult = r.db(dbName).table(tableName)
@@ -91,24 +91,23 @@ public class ModifyDataIT extends AbstractITTest {
     }
 
     @Test
-    public void testReplace_Without() {
+    public void testReplace_Without() { // as lambda
         DBObject dbObj = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
         r.db(dbName).table(tableName).insert(dbObj).run(con);
 
-
-        DMLResult result = r.db(dbName).table(tableName).replace(new DBLambda() {
+        DMLResult result = r.db(dbName).table(tableName).replace(r.lambda(new DBLambda() {
             @Override
-            public RTFluentRow apply(RTFluentRow row) {
+            public RTFluentQuery apply(RTFluentQuery row) {
                 return row.without("field1");
             }
-        }).run(con);
+        })).run(con);
 
         System.out.println(result);
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
     }
 
     @Test
-    public void testWithout() {
+    public void testWithout() { // as normal function
         DBObject dbObj = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
         r.db(dbName).table(tableName).insert(dbObj).run(con);
 

@@ -1,7 +1,7 @@
 package com.rethinkdb.model;
 
-import com.rethinkdb.fluent.RTFluentRow;
+import com.rethinkdb.fluent.RTFluentQuery;
 
 public interface DBLambda {
-    RTFluentRow apply(RTFluentRow row);
+    RTFluentQuery apply(RTFluentQuery row);
 }
