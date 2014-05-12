@@ -10,6 +10,7 @@ import org.fest.assertions.Assertions;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ModifyDataIT extends AbstractITTest {
@@ -104,6 +105,26 @@ public class ModifyDataIT extends AbstractITTest {
 
         System.out.println(result);
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
+    }
+
+    @Test
+    public void testReplace_pluck() { // as lambda
+        DBObject dbObj = new DBObjectBuilder()
+                .with("id", 1)
+                .with("field1", "abc")
+                .with("field2", "def")
+                .build();
+
+        r.db(dbName).table(tableName).insert(dbObj).run(con);
+
+        List<DBObject> result = r.db(dbName).table(tableName).pluck(Arrays.asList("field1", "field2")).run(con);
+        Assertions.assertThat(result.get(0).get("field1")).isEqualTo("abc");
+        Assertions.assertThat(result.get(0).get("field2")).isEqualTo("def");
+
+        result = r.db(dbName).table(tableName).pluck(Arrays.asList("field2")).run(con);
+        Assertions.assertThat(result.get(0).get("field1")).isNull();
+        Assertions.assertThat(result.get(0).get("field2")).isEqualTo("def");
+
     }
 
     @Test

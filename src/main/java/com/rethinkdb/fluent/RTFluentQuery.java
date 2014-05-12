@@ -7,6 +7,7 @@ import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.fluent.types.RTFluentQueryTypes;
 import com.rethinkdb.fluent.types.RTTopLevelQueryTypes;
 import com.rethinkdb.model.DBLambda;
+import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 
 import java.util.ArrayList;
@@ -143,14 +144,76 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
     }
 
-    public RTTopLevelQueryTypes.DMLResult replace(com.rethinkdb.model.DBObject dbObject) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(new RTData<com.rethinkdb.model.DBObject>(dbObject));
+    /**
+     * Replace documents in a selection
+     *
+     * @param dbObject the changes to make
+     */
+    public RTTopLevelQueryTypes.DMLResult replace(DBObject dbObject) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(new RTData<DBObject>(dbObject));
         return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
     }
 
+    /**
+     * Replace documents in a selection
+     *
+     * @param lambda the changes to make
+     */
     public RTTopLevelQueryTypes.DMLResult replace(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(lambda.treeKeeper.getTree());
         return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
+    }
+
+    /**
+     * Delete documents in a selection
+     */
+    public RTTopLevelQueryTypes.DMLResult delete() {
+        return delete(null, null);
+    }
+
+    /**
+     * Delete documents in a selection
+     * @param durability Hard or Soft (leave null for default)
+     * @param returnVals if set to true the deleted document will be returned.
+     */
+    public RTTopLevelQueryTypes.DMLResult delete(Durability durability, Boolean returnVals) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.DELETE);
+        if (returnVals) {
+            operation.withOptionalArg("return_vals", true);
+        }
+        if (durability != null) {
+            operation.withOptionalArg("durability", durability.toString());
+        }
+        return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
+    }
+
+    /**
+     * sync ensures that writes on a given table are written to permanent storage.
+     * Queries that specify soft durability (durability='soft') do not give such guarantees,
+     * so sync can be used to ensure the state of these queries. A call to sync does not return until
+     * all previous writes to the table are persisted.
+     */
+    public RTFluentQuery sync() {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.SYNC);
+        return new RTFluentQuery(treeKeeper.addData(operation));
+    }
+
+    /**
+     * Plucks out one or more attributes
+     * @param fields fields to pluck
+     */
+    public RTFluentQueryTypes.ObjectListResult pluck(List<String> fields) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.PLUCK).withArgs(fields);
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
+    }
+
+    /**
+     * Plucks out one or more attributes from nested objects
+     * @param dbObjects dbObjects describing fields to pluck.
+     */
+    public RTFluentQueryTypes.ObjectListResult pluckNested(List<DBObject> dbObjects) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.PLUCK).withArgs(dbObjects);
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
     /**
@@ -227,43 +290,90 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
+    /**
+     * Transform each element of the sequence by applying the given mapping function. Returns a List of Doubles
+     * @param lambda the transformation to apply
+     */
     public RTFluentQueryTypes.DoubleListResult mapToDouble(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentQueryTypes.DoubleListResult(treeKeeper.addData(operation));
     }
 
+    /**
+     * Transform each element of the sequence by applying the given mapping function. Returns a List of Strings
+     * @param lambda the transformation to apply
+     */
     public RTFluentQueryTypes.StringListResult mapToString(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentQueryTypes.StringListResult(treeKeeper.addData(operation));
     }
 
+    /**
+     * Transform each element of the sequence by applying the given mapping function. Returns a generic List
+     * @param lambda the transformation to apply
+     */
     public RTFluentQueryTypes.GenericListResult map(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentQueryTypes.GenericListResult(treeKeeper.addData(operation));
     }
 
+    /**
+     * Get all the documents for which the given predicate is true.
+     * @param lambda predicate
+     */
     public RTFluentQueryTypes.ObjectListResult filter(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.FILTER).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentQueryTypes.ObjectListResult without(String field) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.WITHOUT).withArgs(field);
+
+    /**
+     * Get all the documents which match the given example
+     * @param example example
+     */
+    public RTFluentQueryTypes.ObjectListResult filter(DBObject example) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.FILTER).withArgs(example);
         return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
+    /**
+     * The opposite of pluck. Takes an object or a sequence of objects, and returns them with the specified paths removed.
+     */
+    public RTFluentQueryTypes.ObjectListResult without(String field, String... additionalFields) {
+        List<String> fields = new ArrayList<String>();
+        fields.add(field);
+        fields.addAll(Arrays.asList(additionalFields));
+        return without(fields);
+    }
+
+    /**
+     * The opposite of pluck. Takes an object or a sequence of objects, and returns them with the specified paths removed.
+     */
+    public RTFluentQueryTypes.ObjectListResult without(List<String> fields) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.WITHOUT).withArgs(fields);
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
+    }
+
+    /**
+     * Opens a lambda.
+     *
+     * In java 1.6, 1.7 Should be invoked as r.lambda(new DBLambda() { ... }) <br />
+     * From java 1.8 can be invoked as r.lambda(x-> ...);
+     */
     public RTFluentQuery lambda(DBLambda lambda) {
-        List<Object> params = new ArrayList<Object>();
-        params.add(1);
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.FUNC).withArgs(params);
+        RTOperation functionOperation = new RTOperation(Q2L.Term.TermType.FUNC).withArgs(Arrays.asList(1));
 
         RTFluentQuery varQuery = new RTFluentQuery(new RTTreeKeeper().addData(new RTOperation(Q2L.Term.TermType.VAR).withArgs(new RTData(1))));
 
         RTOperation applied = lambda.apply(varQuery).treeKeeper.getTree();
 
-        return new RTFluentQuery(treeKeeper.addData(operation.withArgs(applied)));
+        return new RTFluentQuery(treeKeeper.addData(functionOperation.withArgs(applied)));
     }
 
+    /**
+     * Get the field name
+     * @param fieldName field name
+     */
     public RTFluentQuery field(String fieldName) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.GET_FIELD).withArgs(fieldName);
         return new RTFluentQuery(treeKeeper.addData(operation));
@@ -367,5 +477,4 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
     public RTFluentQuery or(Object... o) {
         return makeOperation(Q2L.Term.TermType.ANY, o);
     }
-
 }
