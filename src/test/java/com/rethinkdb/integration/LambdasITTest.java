@@ -5,6 +5,7 @@ import com.rethinkdb.fluent.RTFluentRow;
 import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
+import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class LambdasITTest extends AbstractITTest {
     }
 
     @Test
-    public void testLambda() {
+    public void testMap() {
         List<Double> ages = r.db(dbName).table(tableName).map(new DBLambda() {
             @Override
             public RTFluentRow apply(RTFluentRow row) {
@@ -33,4 +34,5 @@ public class LambdasITTest extends AbstractITTest {
 
         Assertions.assertThat(ages).contains(50.0, 43.0, 75.0);
     }
+
 }

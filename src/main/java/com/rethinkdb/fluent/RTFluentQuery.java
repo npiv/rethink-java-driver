@@ -77,11 +77,6 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTTopLevelQuery_StringList(treeKeeper.addData(operation));
     }
 
-    public RTFluentQuery<DMLResult> update(DBObject object) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.UPDATE).withArgs(new RTData<DBObject>(object));
-        return new RTFluentQuery(treeKeeper.addData(operation), DMLResult.class);
-    }
-
     /**
      * insert DBObjects
      *
@@ -140,6 +135,25 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         }
 
         return new RTTopLevelQuery<DMLResult>(treeKeeper.addData(operation), DMLResult.class);
+    }
+
+    /**
+     * Update JSON documents in a table.
+     * @param object a DBObject of the changes to make
+     */
+    public RTFluentQuery<DMLResult> update(DBObject object) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.UPDATE).withArgs(new RTData<DBObject>(object));
+        return new RTFluentQuery(treeKeeper.addData(operation), DMLResult.class);
+    }
+
+    public RTFluentQuery<DMLResult> replace(DBObject dbObject) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(new RTData<DBObject>(dbObject));
+        return new RTFluentQuery(treeKeeper.addData(operation), DMLResult.class);
+    }
+
+    public RTTopLevelQuery<DMLResult> replace(DBLambda lambda) {
+        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.REPLACE, lambda);
+        return new RTTopLevelQuery(treeKeeper.addData(operation), DMLResult.class);
     }
 
     /**
@@ -217,10 +231,19 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
     }
 
     public RTFluentQuery_ObjectList map(DBLambda lambda) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP)
-                .withArgs(RTLambdaConverter.getOperation(lambda));
-
+        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.MAP, lambda);
         return new RTFluentQuery_ObjectList(treeKeeper.addData(operation));
+    }
+
+
+    public RTFluentQuery_ObjectList filter(DBLambda lambda) {
+        RTOperation operation = RTOperation.lambda(Q2L.Term.TermType.FILTER, lambda);
+        return new RTFluentQuery_ObjectList(treeKeeper.addData(operation));
+    }
+
+    public RTFluentQuery_DBObjectList without(String field) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.WITHOUT).withArgs(field);
+        return new RTFluentQuery_DBObjectList(treeKeeper.addData(operation));
     }
 
 }

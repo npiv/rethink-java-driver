@@ -1,5 +1,9 @@
 package com.rethinkdb.ast;
 
+import com.rethinkdb.fluent.Lambda;
+import com.rethinkdb.fluent.RTFluentQuery;
+import com.rethinkdb.fluent.RTFluentRow;
+import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.proto.Q2L;
 
 import java.util.*;
@@ -18,9 +22,20 @@ public class RTOperation {
         return this;
     }
 
-    public RTOperation withArgs(Object... args) {
-        this.args.addAll(Arrays.asList(args));
+    public RTOperation withArgs(List<Object> args) {
+        for (Object arg : args) {
+            if (arg instanceof RTFluentRow) {
+                this.args.add(((RTFluentRow)arg).treeKeeper.getTree());
+            }
+            else {
+                this.args.add(arg);
+            }
+        }
         return this;
+    }
+
+    public RTOperation withArgs(Object... args) {
+        return withArgs(Arrays.asList(args));
     }
 
     public RTOperation withOptionalArg(String key, Object value) {
@@ -42,6 +57,11 @@ public class RTOperation {
 
     public static RTOperation db(String dbname) {
         return new RTOperation(Q2L.Term.TermType.DB).withArgs(dbname);
+    }
+
+    public static RTOperation lambda(Q2L.Term.TermType type, DBLambda lambda) {
+        return new RTOperation(type)
+                .withArgs(RTLambdaConverter.getOperation(lambda));
     }
 
     @Override

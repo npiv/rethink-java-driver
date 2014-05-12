@@ -37,7 +37,4 @@ public class RTOperationConverter {
         return builder.build();
     }
 
-    private static void wrapAsFunction(RTData operation) {
-
-    }
 }

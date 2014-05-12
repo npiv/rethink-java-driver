@@ -1,10 +1,13 @@
 package com.rethinkdb.integration;
 
+import com.rethinkdb.fluent.RTFluentRow;
+import com.rethinkdb.model.DBLambda;
 import com.rethinkdb.model.DBObject;
 import com.rethinkdb.model.DBObjectBuilder;
 import com.rethinkdb.fluent.option.Durability;
 import com.rethinkdb.response.DMLResult;
 import org.fest.assertions.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -73,6 +76,48 @@ public class ModifyDataIT extends AbstractITTest {
         DMLResult result = r.db(dbName).table(tableName).get(1).update(new DBObjectBuilder().with("name", "test").build()).run(con);
 
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
+    }
+
+    @Test
+    public void testReplace() {
+        DBObject replacement = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
+
+        DMLResult result = r.db(dbName).table(tableName).replace(replacement).run(con);
+        Assertions.assertThat(result.getReplaced()).isEqualTo(0);
+
+        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+
+        result = r.db(dbName).table(tableName).replace(replacement).run(con);
+        Assertions.assertThat(result.getReplaced()).isEqualTo(1);
+    }
+
+    @Test
+    public void testReplace_Without() {
+        DBObject dbObj = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
+        r.db(dbName).table(tableName).insert(dbObj).run(con);
+
+
+        DMLResult result = r.db(dbName).table(tableName).replace(new DBLambda() {
+            @Override
+            public RTFluentRow apply(RTFluentRow row) {
+                return row.without("field1");
+            }
+        }).run(con);
+
+        System.out.println(result);
+        Assertions.assertThat(result.getReplaced()).isEqualTo(1);
+    }
+
+    @Test
+    public void testWithout() {
+        DBObject dbObj = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
+        r.db(dbName).table(tableName).insert(dbObj).run(con);
+
+        List<DBObject> objects = r.db(dbName).table(tableName).without("field1").run(con);
+
+        Assertions.assertThat(objects.get(0).get("field1")).isNull();
+        Assertions.assertThat(objects.get(0).get("id")).isEqualTo(1.0);
+
     }
 
 }
