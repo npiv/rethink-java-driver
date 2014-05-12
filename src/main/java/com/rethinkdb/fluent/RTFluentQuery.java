@@ -235,6 +235,11 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
         return new RTFluentLevelQuery_Types.T_DoubleListResult(treeKeeper.addData(operation));
     }
 
+    public RTFluentLevelQuery_Types.T_StringListResult mapToString(RTFluentQuery lambda) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
+        return new RTFluentLevelQuery_Types.T_StringListResult(treeKeeper.addData(operation));
+    }
+
     public RTFluentLevelQuery_Types.T_GenericListResult map(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
         return new RTFluentLevelQuery_Types.T_GenericListResult(treeKeeper.addData(operation));

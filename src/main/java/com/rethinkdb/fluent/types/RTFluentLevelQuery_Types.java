@@ -51,6 +51,19 @@ public class RTFluentLevelQuery_Types {
         }
     }
 
+    public static class T_StringListResult extends RTFluentQuery {
+
+        public T_StringListResult(RTTreeKeeper treeKeeper) {
+            super(treeKeeper);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public List<String> run(RethinkDBConnection connection) {
+            return (List<String>) super.run(connection);
+        }
+    }
+
     public static class T_DBObject extends RTFluentQuery {
 
         public T_DBObject(RTTreeKeeper treeKeeper) {
