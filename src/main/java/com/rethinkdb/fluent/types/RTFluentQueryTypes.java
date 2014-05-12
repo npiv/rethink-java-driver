@@ -11,11 +11,11 @@ import com.rethinkdb.response.model.DMLResult;
 
 import java.util.List;
 
-public class RTFluentLevelQuery_Types {
+public class RTFluentQueryTypes {
 
-    public static class T_GenericListResult extends RTFluentQuery {
+    public static class GenericListResult extends RTFluentQuery {
 
-        public T_GenericListResult(RTTreeKeeper treeKeeper) {
+        public GenericListResult(RTTreeKeeper treeKeeper) {
             super(treeKeeper);
         }
 
@@ -25,22 +25,22 @@ public class RTFluentLevelQuery_Types {
         }
     }
 
-    public static class T_ObjectListResult extends RTFluentQuery {
+    public static class ObjectListResult extends RTFluentQuery {
 
-        public T_ObjectListResult(RTTreeKeeper treeKeeper) {
+        public ObjectListResult(RTTreeKeeper treeKeeper) {
             super(treeKeeper);
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public List<DBObject> run(RethinkDBConnection connection) {
-            return (List<DBObject>) super.run(connection);
+        public List<com.rethinkdb.model.DBObject> run(RethinkDBConnection connection) {
+            return (List<com.rethinkdb.model.DBObject>) super.run(connection);
         }
     }
 
-    public static class T_DoubleListResult extends RTFluentQuery {
+    public static class DoubleListResult extends RTFluentQuery {
 
-        public T_DoubleListResult(RTTreeKeeper treeKeeper) {
+        public DoubleListResult(RTTreeKeeper treeKeeper) {
             super(treeKeeper);
         }
 
@@ -51,9 +51,9 @@ public class RTFluentLevelQuery_Types {
         }
     }
 
-    public static class T_StringListResult extends RTFluentQuery {
+    public static class StringListResult extends RTFluentQuery {
 
-        public T_StringListResult(RTTreeKeeper treeKeeper) {
+        public StringListResult(RTTreeKeeper treeKeeper) {
             super(treeKeeper);
         }
 
@@ -64,14 +64,14 @@ public class RTFluentLevelQuery_Types {
         }
     }
 
-    public static class T_DBObject extends RTFluentQuery {
+    public static class DBObject extends RTFluentQuery {
 
-        public T_DBObject(RTTreeKeeper treeKeeper) {
+        public DBObject(RTTreeKeeper treeKeeper) {
             super(treeKeeper);
         }
 
         @Override
-        public DBObject run(RethinkDBConnection connection) { return (DBObject) super.run(connection); }
+        public com.rethinkdb.model.DBObject run(RethinkDBConnection connection) { return (com.rethinkdb.model.DBObject) super.run(connection); }
     }
 
 }

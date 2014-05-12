@@ -4,18 +4,15 @@ import com.rethinkdb.ast.RTData;
 import com.rethinkdb.ast.RTOperation;
 import com.rethinkdb.ast.RTTreeKeeper;
 import com.rethinkdb.fluent.option.Durability;
-import com.rethinkdb.fluent.types.RTFluentLevelQuery_Types;
-import com.rethinkdb.fluent.types.RTTopLevelQuery_Types;
+import com.rethinkdb.fluent.types.RTFluentQueryTypes;
+import com.rethinkdb.fluent.types.RTTopLevelQueryTypes;
 import com.rethinkdb.model.DBLambda;
-import com.rethinkdb.model.DBObject;
 import com.rethinkdb.proto.Q2L;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.rethinkdb.fluent.types.RTTopLevelQuery_Types.*;
 
 public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
 
@@ -33,9 +30,9 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param tableName table name
      */
-    public RTFluentLevelQuery_Types.T_ObjectListResult table(String tableName) {
+    public RTFluentQueryTypes.ObjectListResult table(String tableName) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.TABLE).withArgs(tableName);
-        return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
     /**
@@ -53,9 +50,9 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param dbName database name
      */
-    public T_DDLResult dbCreate(String dbName) {
+    public RTTopLevelQueryTypes.DDLResult dbCreate(String dbName) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.DB_CREATE).withArgs(new RTData<String>(dbName));
-        return new T_DDLResult(treeKeeper.addData(operation));
+        return new RTTopLevelQueryTypes.DDLResult(treeKeeper.addData(operation));
     }
 
     /**
@@ -63,17 +60,17 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param dbName database name
      */
-    public T_DDLResult dbDrop(String dbName) {
+    public RTTopLevelQueryTypes.DDLResult dbDrop(String dbName) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.DB_DROP).withArgs(new RTData<String>(dbName));
-        return new T_DDLResult(treeKeeper.addData(operation));
+        return new RTTopLevelQueryTypes.DDLResult(treeKeeper.addData(operation));
     }
 
     /**
      * list databases
      */
-    public T_StringListResult dbList() {
+    public RTTopLevelQueryTypes.StringListResult dbList() {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.DB_LIST);
-        return new T_StringListResult(treeKeeper.addData(operation));
+        return new RTTopLevelQueryTypes.StringListResult(treeKeeper.addData(operation));
     }
 
     /**
@@ -81,7 +78,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param objects objects to insert
      */
-    public T_DMLResult insert(DBObject... objects) {
+    public RTTopLevelQueryTypes.DMLResult insert(com.rethinkdb.model.DBObject... objects) {
         return insert(Arrays.asList(objects), null, false, false);
     }
 
@@ -90,7 +87,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param objects objects to insert
      */
-    public T_DMLResult insert(List<DBObject> objects) {
+    public RTTopLevelQueryTypes.DMLResult insert(List<com.rethinkdb.model.DBObject> objects) {
         return insert(objects, null, false, false);
     }
 
@@ -102,7 +99,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      * @param returnVals if set to true and in case of a single insert/upsert, the inserted/updated document will be returned.
      * @param upsert     when set to true, performs a replace if a document with the same primary key exists.
      */
-    public T_DMLResult insert(DBObject dbObject, Durability durability, boolean returnVals, boolean upsert) {
+    public RTTopLevelQueryTypes.DMLResult insert(com.rethinkdb.model.DBObject dbObject, Durability durability, boolean returnVals, boolean upsert) {
         return insert(Arrays.asList(dbObject), durability, returnVals, upsert);
     }
 
@@ -114,7 +111,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      * @param returnVals if set to true and in case of a single insert/upsert, the inserted/updated document will be returned.
      * @param upsert     when set to true, performs a replace if a document with the same primary key exists.
      */
-    public T_DMLResult insert(List<DBObject> dbObjects, Durability durability, boolean returnVals, boolean upsert) {
+    public RTTopLevelQueryTypes.DMLResult insert(List<com.rethinkdb.model.DBObject> dbObjects, Durability durability, boolean returnVals, boolean upsert) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.INSERT);
 
         if (returnVals) {
@@ -133,7 +130,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
             operation.withArgs(dbObjects);
         }
 
-        return new T_DMLResult(treeKeeper.addData(operation));
+        return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
     }
 
     /**
@@ -141,19 +138,19 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param object a DBObject of the changes to make
      */
-    public RTTopLevelQuery_Types.T_DMLResult update(DBObject object) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.UPDATE).withArgs(new RTData<DBObject>(object));
-        return new RTTopLevelQuery_Types.T_DMLResult(treeKeeper.addData(operation));
+    public RTTopLevelQueryTypes.DMLResult update(com.rethinkdb.model.DBObject object) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.UPDATE).withArgs(new RTData<com.rethinkdb.model.DBObject>(object));
+        return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
     }
 
-    public RTTopLevelQuery_Types.T_DMLResult replace(DBObject dbObject) {
-        RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(new RTData<DBObject>(dbObject));
-        return new RTTopLevelQuery_Types.T_DMLResult(treeKeeper.addData(operation));
+    public RTTopLevelQueryTypes.DMLResult replace(com.rethinkdb.model.DBObject dbObject) {
+        RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(new RTData<com.rethinkdb.model.DBObject>(dbObject));
+        return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
     }
 
-    public T_DMLResult replace(RTFluentQuery lambda) {
+    public RTTopLevelQueryTypes.DMLResult replace(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.REPLACE).withArgs(lambda.treeKeeper.getTree());
-        return new T_DMLResult(treeKeeper.addData(operation));
+        return new RTTopLevelQueryTypes.DMLResult(treeKeeper.addData(operation));
     }
 
     /**
@@ -161,9 +158,9 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param key key
      */
-    public RTFluentLevelQuery_Types.T_DBObject get(String key) {
+    public RTFluentQueryTypes.DBObject get(String key) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.GET).withArgs(key);
-        return new RTFluentLevelQuery_Types.T_DBObject(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.DBObject(treeKeeper.addData(operation));
     }
 
     /**
@@ -171,9 +168,9 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      *
      * @param key key
      */
-    public RTFluentLevelQuery_Types.T_DBObject get(Number key) {
+    public RTFluentQueryTypes.DBObject get(Number key) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.GET).withArgs(key);
-        return new RTFluentLevelQuery_Types.T_DBObject(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.DBObject(treeKeeper.addData(operation));
     }
 
 
@@ -183,7 +180,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      * @param index             at least one index mandatory
      * @param additionalIndexes optional additional indexes
      */
-    public RTFluentLevelQuery_Types.T_ObjectListResult getAll(String index, String... additionalIndexes) {
+    public RTFluentQueryTypes.ObjectListResult getAll(String index, String... additionalIndexes) {
         return _getAll(null, index, additionalIndexes);
     }
 
@@ -194,7 +191,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      * @param index             at least one index mandatory
      * @param additionalIndexes optional additional indexes
      */
-    public RTFluentLevelQuery_Types.T_ObjectListResult getAll(String indexName, String index, String... additionalIndexes) {
+    public RTFluentQueryTypes.ObjectListResult getAll(String indexName, String index, String... additionalIndexes) {
         return _getAll(indexName, index, additionalIndexes);
     }
 
@@ -204,7 +201,7 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      * @param index             at least one index mandatory
      * @param additionalIndexes optional additional indexes
      */
-    public RTFluentLevelQuery_Types.T_ObjectListResult getAll(Number index, Number... additionalIndexes) {
+    public RTFluentQueryTypes.ObjectListResult getAll(Number index, Number... additionalIndexes) {
         return _getAll(null, index, additionalIndexes);
     }
 
@@ -215,11 +212,11 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
      * @param index             at least one index mandatory
      * @param additionalIndexes optional additional indexes
      */
-    public RTFluentLevelQuery_Types.T_ObjectListResult getAll(String indexName, Number index, Number... additionalIndexes) {
+    public RTFluentQueryTypes.ObjectListResult getAll(String indexName, Number index, Number... additionalIndexes) {
         return _getAll(indexName, index, additionalIndexes);
     }
 
-    private <INDEX> RTFluentLevelQuery_Types.T_ObjectListResult _getAll(String indexName, INDEX index, INDEX... additionalIndexes) {
+    private <INDEX> RTFluentQueryTypes.ObjectListResult _getAll(String indexName, INDEX index, INDEX... additionalIndexes) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.GET_ALL);
 
         operation.withArgs(index);
@@ -227,32 +224,32 @@ public class RTFluentQuery<T> extends RTTopLevelQuery<T> {
             operation.withArgs(k);
         }
 
-        return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_DoubleListResult mapToDouble(RTFluentQuery lambda) {
+    public RTFluentQueryTypes.DoubleListResult mapToDouble(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
-        return new RTFluentLevelQuery_Types.T_DoubleListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.DoubleListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_StringListResult mapToString(RTFluentQuery lambda) {
+    public RTFluentQueryTypes.StringListResult mapToString(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
-        return new RTFluentLevelQuery_Types.T_StringListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.StringListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_GenericListResult map(RTFluentQuery lambda) {
+    public RTFluentQueryTypes.GenericListResult map(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.MAP).withArgs(lambda.treeKeeper.getTree());
-        return new RTFluentLevelQuery_Types.T_GenericListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.GenericListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_ObjectListResult filter(RTFluentQuery lambda) {
+    public RTFluentQueryTypes.ObjectListResult filter(RTFluentQuery lambda) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.FILTER).withArgs(lambda.treeKeeper.getTree());
-        return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
-    public RTFluentLevelQuery_Types.T_ObjectListResult without(String field) {
+    public RTFluentQueryTypes.ObjectListResult without(String field) {
         RTOperation operation = new RTOperation(Q2L.Term.TermType.WITHOUT).withArgs(field);
-        return new RTFluentLevelQuery_Types.T_ObjectListResult(treeKeeper.addData(operation));
+        return new RTFluentQueryTypes.ObjectListResult(treeKeeper.addData(operation));
     }
 
     public RTFluentQuery lambda(DBLambda lambda) {
