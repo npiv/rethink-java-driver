@@ -92,6 +92,27 @@ public class ModifyDataIT extends AbstractITTest {
         Assertions.assertThat(result.getReplaced()).isEqualTo(2);
     }
 
+    @Test
+    public void updateBranch() {
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 1).with("age", 1)).run(con);
+
+        DMLResult result = RqlQuery.R.db(dbName).table(tableName)
+                .update(
+                        new RqlFunction() {
+                            @Override
+                            public RqlQuery apply(RqlQuery row) {
+                                return r.branch(
+                                        row.field("age").gt(0),
+                                        new MapObject().with("born", true),
+                                        new MapObject().with("born", false)
+                                );
+                            }
+                        }
+                ).run(con);
+
+        Assertions.assertThat(result.getReplaced()).isEqualTo(1);
+    }
+
 
     @Test
     public void testReplace() {

@@ -28,5 +28,13 @@ public class ManipulatingTablesIT extends AbstractITTest {
         Assertions.assertThat(res2.getInserted()).isEqualTo(0); // duplicate id
     }
 
+    @Test
+    public void testIndexList() {
+        Assertions.assertThat(r.db(dbName).table(tableName).indexCreate("wee").run(con).getCreated()).isEqualTo(1);
+        Assertions.assertThat(r.db(dbName).table(tableName).indexList().run(con())).containsExactly("wee");
+        Assertions.assertThat(r.db(dbName).table(tableName).indexDrop("wee").run(con).getDropped()).isEqualTo(1);
+        Assertions.assertThat(r.db(dbName).table(tableName).indexList().run(con())).isEmpty();
+    }
+
 
 }

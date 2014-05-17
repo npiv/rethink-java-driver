@@ -2,6 +2,8 @@ package com.rethinkdb.ast.query;
 
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.helper.Arguments;
+import com.rethinkdb.ast.helper.OptionalArguments;
+import com.rethinkdb.model.Durability;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.gen.*;
 import com.rethinkdb.proto.Q2L;
@@ -155,9 +157,32 @@ public class RqlQuery {
         return new DB(new Arguments(db), null);
     }
 
-    public Update update(Map<String, Object> object) {
-        return new Update(this, new Arguments(RqlUtil.funcWrap(object)), null);
+    public Update update(Map<String, Object> object, Boolean nonAtomic, Durability durability, Boolean returnVals) {
+        return new Update(this, new Arguments(RqlUtil.funcWrap(object)),
+                new OptionalArguments()
+                        .with("non_atomic", nonAtomic)
+                        .with("durability", durability)
+                        .with("return_vals", returnVals)
+        );
     }
+
+    public Update update(Map<String, Object> object) {
+        return update(object, null, null, null);
+    }
+
+    public Update update(RqlFunction function, Boolean nonAtomic, Durability durability, Boolean returnVals) {
+        return new Update(this, new Arguments(RqlUtil.funcWrap(function)),
+                new OptionalArguments()
+                        .with("non_atomic", nonAtomic)
+                        .with("durability", durability)
+                        .with("return_vals", returnVals)
+        );
+    }
+
+    public Update update(RqlFunction function) {
+        return update(function, null, null, null);
+    }
+
 
     public ImplicitVar row() {
         return new ImplicitVar(null, null, null);
@@ -203,5 +228,9 @@ public class RqlQuery {
 
     public Pluck pluck(List<String> fields) {
         return new Pluck(this, new Arguments(fields), null);
+    }
+
+    public Branch branch(RqlQuery predicate, Map<String,Object> trueBranch, Map<String,Object> falseBranch) {
+        return new Branch(predicate, new Arguments(trueBranch, falseBranch), null);
     }
 }

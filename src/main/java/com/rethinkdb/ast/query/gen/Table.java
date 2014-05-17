@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
 import com.rethinkdb.ast.query.RqlQuery;
+import com.rethinkdb.ast.query.RqlUtil;
 import com.rethinkdb.model.Durability;
+import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.proto.Q2L;
 
 import java.util.HashMap;
@@ -54,6 +56,24 @@ public class Table extends RqlQuery {
     }
     public GetAll getAll(List<Object> keys) {
         return getAll(keys, null);
+    }
+
+    public IndexCreate indexCreate(String name) {
+        return indexCreate(name, null, null);
+    }
+
+    public IndexCreate indexCreate(String name, RqlFunction function, Boolean multi) {
+        Arguments args = new Arguments(name);
+        if (function != null) args.add(RqlUtil.funcWrap(function));
+        return new IndexCreate(this, args, new OptionalArguments().with("multi",multi));
+    }
+
+    public IndexDrop indexDrop(String name) {
+        return new IndexDrop(this, new Arguments(name), null);
+    }
+
+    public IndexList indexList() {
+        return new IndexList(this, null, null);
     }
 }
         
