@@ -5,6 +5,9 @@ import com.rethinkdb.model.MapObject;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Map;
+
 public class FetchDataIT extends AbstractITTest {
 
     @Test
@@ -36,6 +39,16 @@ public class FetchDataIT extends AbstractITTest {
         r.db(dbName).table(tableName).insert( new MapObject().with("id", 2) ).run(con);
 
         Assertions.assertThat( r.table(tableName).getAll(Lists.<Object>newArrayList(1,2)).run(con) ).hasSize(2);
+    }
+
+    @Test
+    public void testWithFields() {
+        r.db(dbName).table(tableName).insert( new MapObject().with("id", 1).with("name", "john").with("age",22) ).run(con);
+
+        List<Map<String, Object>> result = (List<Map<String, Object>>) r.table(tableName).withFields("name","age").run(con);
+        Assertions.assertThat(result).hasSize(1);
+        Assertions.assertThat(result.get(0).get("id")).isNull();
+        Assertions.assertThat(result.get(0).get("name")).isEqualTo("john");
     }
 
     @Test

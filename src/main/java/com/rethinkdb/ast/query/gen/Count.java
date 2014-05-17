@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -15,6 +16,11 @@ public class Count extends RqlQuery {
 
     public Count(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.COUNT, args, optionalArgs);
+    }
+
+    @Override
+    public Long run(RethinkDBConnection connection) {
+        return ((Double)super.run(connection)).longValue();
     }
 }
         

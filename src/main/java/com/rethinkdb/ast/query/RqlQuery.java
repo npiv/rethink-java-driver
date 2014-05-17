@@ -233,4 +233,33 @@ public class RqlQuery {
     public Branch branch(RqlQuery predicate, Map<String,Object> trueBranch, Map<String,Object> falseBranch) {
         return new Branch(predicate, new Arguments(trueBranch, falseBranch), null);
     }
+
+    public Delete delete() {
+        return delete(null, null);
+    }
+
+    public Delete delete(Durability durability, Boolean withVals) {
+        return new Delete(this, null, new OptionalArguments().with("durability", durability).with("with_vals", withVals));
+    }
+
+    public Count count() {
+        return new Count(this, null, null);
+    }
+
+    // todo test
+    public Sync sync() {
+        return new Sync(this, null, null);
+    }
+
+    public Match match(String regexp) {
+        return new Match(this, new Arguments(regexp), null);
+    }
+
+    public RqlQuery expr(Object expr) {
+        return RqlUtil.toRqlQuery(expr);
+    }
+
+    public WithFields withFields(String... fields) {
+        return new WithFields(this, new Arguments(fields), null);
+    }
 }

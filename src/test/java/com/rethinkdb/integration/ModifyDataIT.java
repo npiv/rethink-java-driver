@@ -171,6 +171,16 @@ public class ModifyDataIT extends AbstractITTest {
 
         Assertions.assertThat(objects.get(0).get("field1")).isNull();
         Assertions.assertThat(objects.get(0).get("id")).isEqualTo(1.0);
+    }
+
+    @Test
+    public void testCountAndDelete() {
+        Map<String, Object> dbObj = new MapObject().with("id", 1);
+        r.db(dbName).table(tableName).insert(dbObj).run(con);
+
+        Assertions.assertThat(r.table(tableName).count().run(con)).isEqualTo(1);
+        r.db(dbName).table(tableName).delete().run(con);
+        Assertions.assertThat(r.table(tableName).count().run(con)).isEqualTo(0);
 
     }
 
