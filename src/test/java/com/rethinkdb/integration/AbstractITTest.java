@@ -4,7 +4,7 @@ import com.rethinkdb.RethinkDB;
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.RethinkDBException;
 import com.rethinkdb.ast.query.RqlQuery;
-import com.rethinkdb.fluent.option.Durability;
+import com.rethinkdb.model.Durability;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

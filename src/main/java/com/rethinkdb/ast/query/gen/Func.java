@@ -1,12 +1,10 @@
 package com.rethinkdb.ast.query.gen;
 
-import com.rethinkdb.ast.Arguments;
-import com.rethinkdb.ast.RqlFunction;
+import com.rethinkdb.ast.helper.Arguments;
+import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.ast.query.RqlUtil;
 import com.rethinkdb.proto.Q2L;
-
-import java.util.List;
 
 // extends RqlQuery
 public class Func extends RqlQuery {

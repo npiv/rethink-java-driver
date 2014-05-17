@@ -1,8 +1,8 @@
 package com.rethinkdb.integration;
 
 import com.google.common.collect.Lists;
-import com.rethinkdb.ast.MapObject;
-import com.rethinkdb.ast.RqlFunction;
+import com.rethinkdb.model.MapObject;
+import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.RqlQuery;
 import org.fest.assertions.Assertions;
 import org.junit.Before;

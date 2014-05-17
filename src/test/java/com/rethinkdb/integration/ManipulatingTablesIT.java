@@ -1,6 +1,6 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.ast.MapObject;
+import com.rethinkdb.model.MapObject;
 import com.rethinkdb.response.model.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;

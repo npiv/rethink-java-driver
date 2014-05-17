@@ -1,8 +1,8 @@
 package com.rethinkdb.ast.query;
 
 import com.rethinkdb.RethinkDBConnection;
-import com.rethinkdb.ast.Arguments;
-import com.rethinkdb.ast.RqlFunction;
+import com.rethinkdb.ast.helper.Arguments;
+import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.gen.*;
 import com.rethinkdb.proto.Q2L;
 

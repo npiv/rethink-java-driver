@@ -1,4 +1,4 @@
-package com.rethinkdb.ast;
+package com.rethinkdb.model;
 
 import com.rethinkdb.ast.query.RqlQuery;
 

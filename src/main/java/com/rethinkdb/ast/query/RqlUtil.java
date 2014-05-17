@@ -1,7 +1,8 @@
 package com.rethinkdb.ast.query;
 
 import com.rethinkdb.RethinkDBException;
-import com.rethinkdb.ast.RqlFunction;
+import com.rethinkdb.model.RqlFunction;
+import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.ast.query.gen.Datum;
 import com.rethinkdb.ast.query.gen.Func;
 import com.rethinkdb.ast.query.gen.MakeArray;

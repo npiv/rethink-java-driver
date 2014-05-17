@@ -1,4 +1,4 @@
-package com.rethinkdb.fluent.option;
+package com.rethinkdb.model;
 
 /**
  * The durability setting used in various options like insert or table create

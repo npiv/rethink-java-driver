@@ -1,10 +1,10 @@
 package com.rethinkdb.ast.query.gen;
 
 import com.google.common.collect.Lists;
-import com.rethinkdb.ast.Arguments;
-import com.rethinkdb.ast.OptionalArguments;
+import com.rethinkdb.ast.helper.Arguments;
+import com.rethinkdb.ast.helper.OptionalArguments;
 import com.rethinkdb.ast.query.RqlQuery;
-import com.rethinkdb.fluent.option.Durability;
+import com.rethinkdb.model.Durability;
 import com.rethinkdb.proto.Q2L;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.rethinkdb.ast;
+package com.rethinkdb.ast.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
