@@ -1,41 +1,46 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.fluent.RTFluentQuery;
-import com.rethinkdb.model.DBLambda;
-import com.rethinkdb.model.DBObjectBuilder;
+import com.google.common.collect.Lists;
+import com.rethinkdb.ast.MapObject;
+import com.rethinkdb.ast.RqlFunction;
+import com.rethinkdb.ast.query.RqlQuery;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 public class FilteringIT extends AbstractITTest {
 
     @Before
     public void setUpSimpleTable() {
-        r.db(dbName).table(tableName).insert(
-                new DBObjectBuilder().with("name", "superman").with("age", 30).build(),
-                new DBObjectBuilder().with("name", "spiderman").with("age", 23).build(),
-                new DBObjectBuilder().with("name", "heman").with("age", 55).build()
-        ).run(con);
+        r.db(dbName).table(tableName).insert(Lists.<Map<String,Object>>newArrayList(
+                new MapObject().with("name", "superman").with("age", 30),
+                new MapObject().with("name", "spiderman").with("age", 23),
+                new MapObject().with("name", "heman").with("age", 55)
+        )).run(con);
     }
 
     @Test
     public void testGT() {
         Assertions.assertThat(
-            r.db(dbName).table(tableName).filter(r.lambda(new DBLambda() {
-                @Override
-                public RTFluentQuery apply(RTFluentQuery row) {
-                    return row.field("age").gt(30);
-                }
-            })).run(con).size()
-        ).isEqualTo(1);
+                r.db(dbName).table(tableName).filter(new RqlFunction() {
+                     @Override
+                     public RqlQuery apply(RqlQuery row) {
+                         return row.field("age").gt(30);
+                     }
+                 }
+                ).run(con())
+        ).hasSize(1);
     }
 
     @Test
     public void testGTandLT() {
         Assertions.assertThat(
-                r.db(dbName).table(tableName).filter(r.lambda(new DBLambda() {
+                r.db(dbName).table(tableName).filter(new RqlFunction() {
+
                     @Override
-                    public RTFluentQuery apply(RTFluentQuery row) {
+                    public RqlQuery apply(RqlQuery row) {
                         return r.or(
                                 r.and(
                                         row.field("age").gt(20),
@@ -44,7 +49,8 @@ public class FilteringIT extends AbstractITTest {
                                 row .field("name").eq("heman")
                         );
                     }
-                })).run(con).size()
+                }
+                ).run(con).size()
         ).isEqualTo(2);
     }
 }

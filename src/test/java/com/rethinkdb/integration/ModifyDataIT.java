@@ -1,10 +1,9 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.fluent.RTFluentQuery;
+import com.rethinkdb.ast.MapObject;
+import com.rethinkdb.ast.RqlFunction;
+import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.fluent.option.Durability;
-import com.rethinkdb.model.DBLambda;
-import com.rethinkdb.model.DBObject;
-import com.rethinkdb.model.DBObjectBuilder;
 import com.rethinkdb.response.model.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
@@ -12,21 +11,24 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void testInsertList() {
-        List<DBObject> objects = new ArrayList<DBObject>();
+        List<Map<String, Object>> objects = new ArrayList<Map<String, Object>>();
         for (int i = 0; i < 10; i++) {
-            objects.add(new DBObjectBuilder().with("abc", i).build());
+            objects.add(new MapObject().with("abc", i));
         }
         r.db(dbName).table(tableName).insert(objects).run(con);
 
-        List<DBObject> result = r.db(dbName).table(tableName).run(con);
+        // TODO runForType here
+        List<Map<String, Object>> result = (List<Map<String, Object>>) r.db(dbName).table(tableName).run(con);
+
         List<Double> setKeys = new ArrayList<Double>();
-        for (DBObject dbObject : result) {
-            setKeys.add((Double) dbObject.get("abc"));
+        for (Map<String, Object> map : result) {
+            setKeys.add((Double) map.get("abc"));
         }
 
         Assertions.assertThat(setKeys).contains(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
@@ -35,9 +37,9 @@ public class ModifyDataIT extends AbstractITTest {
     @Test
     public void doubleInsertFailsWithoutUpsert() {
         DMLResult firstResult = r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+                .insert(new MapObject().with("id", 1)).run(con);
         DMLResult secondResult = r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id", 1).with("field", "a").build()).run(con);
+                .insert(new MapObject().with("id", 1).with("field", "a")).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
 
@@ -48,9 +50,9 @@ public class ModifyDataIT extends AbstractITTest {
     @Test
     public void doubleInsertWorksWithUpsert() {
         DMLResult firstResult = r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id", 1).build(), Durability.hard, false, true).run(con);
+                .insert(new MapObject().with("id", 1), Durability.hard, false, true).run(con);
         DMLResult secondResult = r.db(dbName).table(tableName)
-                .insert(new DBObjectBuilder().with("id", 1).with("field", "a").build(), Durability.hard, false, true).run(con);
+                .insert(new MapObject().with("id", 1).with("field", "a"), Durability.hard, false, true).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
 
@@ -61,31 +63,44 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void updateFromTable() {
-        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 1).build()).run(con);
-        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 2).build()).run(con);
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 1)).run(con);
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 2)).run(con);
 
-        DMLResult result = r.db(dbName).table(tableName).update(new DBObjectBuilder().with("name", "test").build()).run(con);
+        DMLResult result = r.db(dbName).table(tableName).update(new MapObject().with("name", "test")).run(con);
 
         Assertions.assertThat(result.getReplaced()).isEqualTo(2);
     }
 
     @Test
     public void updateFromGet() {
-        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 1)).run(con);
 
-        DMLResult result = r.db(dbName).table(tableName).get(1).update(new DBObjectBuilder().with("name", "test").build()).run(con);
+        DMLResult result = r.db(dbName).table(tableName).get(1).update(new MapObject().with("name", "test")).run(con);
 
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
     }
 
+
+    @Test
+    public void updateWithLambdaInObject() {
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 1).with("age", 1)).run(con);
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 2).with("age", 2)).run(con);
+
+        DMLResult result = RqlQuery.R.db(dbName).table(tableName)
+                .update(new MapObject().with("age", r.row().field("age").add(22))).run(con);
+
+        Assertions.assertThat(result.getReplaced()).isEqualTo(2);
+    }
+
+
     @Test
     public void testReplace() {
-        DBObject replacement = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
+        Map<String, Object> replacement = new MapObject().with("id", 1).with("field1", "abc");
 
         DMLResult result = r.db(dbName).table(tableName).replace(replacement).run(con);
         Assertions.assertThat(result.getReplaced()).isEqualTo(0);
 
-        r.db(dbName).table(tableName).insert(new DBObjectBuilder().with("id", 1).build()).run(con);
+        r.db(dbName).table(tableName).insert(new MapObject().with("id", 1)).run(con);
 
         result = r.db(dbName).table(tableName).replace(replacement).run(con);
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
@@ -93,15 +108,15 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void testReplace_Without() { // as lambda
-        DBObject dbObj = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
+        Map<String, Object> dbObj = new MapObject().with("id", 1).with("field1", "abc");
         r.db(dbName).table(tableName).insert(dbObj).run(con);
 
-        DMLResult result = r.db(dbName).table(tableName).replace(r.lambda(new DBLambda() {
+        DMLResult result = r.db(dbName).table(tableName).replace(new RqlFunction() {
             @Override
-            public RTFluentQuery apply(RTFluentQuery row) {
+            public RqlQuery apply(RqlQuery row) {
                 return row.without("field1");
             }
-        })).run(con);
+        }).run(con);
 
         System.out.println(result);
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
@@ -109,19 +124,18 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void testReplace_pluck() { // as lambda
-        DBObject dbObj = new DBObjectBuilder()
+        Map<String, Object> dbObj = new MapObject()
                 .with("id", 1)
                 .with("field1", "abc")
-                .with("field2", "def")
-                .build();
+                .with("field2", "def");
 
         r.db(dbName).table(tableName).insert(dbObj).run(con);
 
-        List<DBObject> result = r.db(dbName).table(tableName).pluck(Arrays.asList("field1", "field2")).run(con);
+        List<Map<String, Object>> result = (List<Map<String, Object>>) r.db(dbName).table(tableName).pluck(Arrays.asList("field1", "field2")).run(con);
         Assertions.assertThat(result.get(0).get("field1")).isEqualTo("abc");
         Assertions.assertThat(result.get(0).get("field2")).isEqualTo("def");
 
-        result = r.db(dbName).table(tableName).pluck(Arrays.asList("field2")).run(con);
+        result = (List<Map<String, Object>>) r.db(dbName).table(tableName).pluck(Arrays.asList("field2")).run(con);
         Assertions.assertThat(result.get(0).get("field1")).isNull();
         Assertions.assertThat(result.get(0).get("field2")).isEqualTo("def");
 
@@ -129,10 +143,10 @@ public class ModifyDataIT extends AbstractITTest {
 
     @Test
     public void testWithout() { // as normal function
-        DBObject dbObj = new DBObjectBuilder().with("id", 1).with("field1", "abc").build();
+        Map<String, Object> dbObj = new MapObject().with("id", 1).with("field1", "abc");
         r.db(dbName).table(tableName).insert(dbObj).run(con);
 
-        List<DBObject> objects = r.db(dbName).table(tableName).without("field1").run(con);
+        List<Map<String, Object>> objects = (List<Map<String, Object>>) r.db(dbName).table(tableName).without("field1").run(con);
 
         Assertions.assertThat(objects.get(0).get("field1")).isNull();
         Assertions.assertThat(objects.get(0).get("id")).isEqualTo(1.0);

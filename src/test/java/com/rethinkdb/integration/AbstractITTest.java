@@ -3,7 +3,8 @@ package com.rethinkdb.integration;
 import com.rethinkdb.RethinkDB;
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.RethinkDBException;
-import com.rethinkdb.fluent.RTFluentQuery;
+import com.rethinkdb.ast.query.RqlQuery;
+import com.rethinkdb.fluent.option.Durability;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -14,7 +15,7 @@ import java.util.Properties;
 
 public abstract class AbstractITTest {
 
-    protected RTFluentQuery r = new RTFluentQuery();
+    protected RqlQuery r = RqlQuery.R;
     
     protected static RethinkDBConnection con;
 
@@ -26,7 +27,7 @@ public abstract class AbstractITTest {
         try {
             r.dbCreate(dbName).run(con);
             con.use(dbName);
-            r.db(dbName).tableCreate(tableName).run(con);
+            r.db(dbName).tableCreate(tableName,null, Durability.hard, null).run(con);
         } catch (RethinkDBException ex) {
             ex.printStackTrace();
         }

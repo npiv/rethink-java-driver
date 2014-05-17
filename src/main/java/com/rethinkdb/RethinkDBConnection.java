@@ -1,12 +1,6 @@
 package com.rethinkdb;
 
-import com.rethinkdb.ast.RTOperationConverter;
-import com.rethinkdb.fluent.RTFluentQuery;
-import com.rethinkdb.model.DBObject;
-import com.rethinkdb.proto.ProtoUtil;
 import com.rethinkdb.proto.Q2L;
-import com.rethinkdb.proto.RAssocPairBuilder;
-import com.rethinkdb.proto.RTermBuilder;
 import com.rethinkdb.response.DBResultFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RethinkDBConnection {
-    private static final Logger logger = LoggerFactory.getLogger(RTFluentQuery.class);
+    private static final Logger logger = LoggerFactory.getLogger(RethinkDBConnection.class);
 
     private static final AtomicInteger tokenGenerator = new AtomicInteger();
 
@@ -91,16 +85,33 @@ public class RethinkDBConnection {
 
     // set the global option dbName if user chose one through use
     private void setDbOptionIfNeeded(Q2L.Query.Builder q, String db) {
-        if (!ProtoUtil.hasKey(q.getGlobalOptargsList(), "db") && db != null) {
+        if (db == null) return;
+
+        if (!hasDBSet(q)) {
             q.addGlobalOptargs(
-                    RAssocPairBuilder.queryPair(
-                            "db",
-                            Q2L.Term.newBuilder()
+                    Q2L.Query.AssocPair.newBuilder()
+                            .setKey("db")
+                            .setVal(Q2L.Term.newBuilder()
                                     .setType(Q2L.Term.TermType.DB)
-                                    .addArgs(RTermBuilder.datumTerm(db)).build()
-                    )
+                                    .addArgs(Q2L.Term.newBuilder()
+                                            .setType(Q2L.Term.TermType.DATUM)
+                                            .setDatum(
+                                                    Q2L.Datum.newBuilder()
+                                                            .setType(Q2L.Datum.DatumType.R_STR)
+                                                            .setRStr(db).build()
+                                            )
+                                    ).build())
             );
         }
+    }
+
+    private boolean hasDBSet(Q2L.Query.Builder q) {
+        for (Q2L.Query.AssocPair assocPair : q.getGlobalOptargsList()) {
+            if (assocPair.getKey().equals("db")) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

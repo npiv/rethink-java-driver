@@ -1,10 +1,9 @@
 package com.rethinkdb.integration;
 
-import com.rethinkdb.model.DBObjectBuilder;
+import com.google.common.collect.Lists;
+import com.rethinkdb.ast.MapObject;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
-
-import java.util.List;
 
 public class FetchDataIT extends AbstractITTest {
 
@@ -12,7 +11,7 @@ public class FetchDataIT extends AbstractITTest {
     public void testGetByPKString() {
         Assertions.assertThat( r.table(tableName).get("test").run(con) ).isNull();
 
-        r.db(dbName).table(tableName).insert( new DBObjectBuilder().with("id", "test").build() ).run(con);
+        r.db(dbName).table(tableName).insert( new MapObject().with("id", "test") ).run(con);
 
         Assertions.assertThat( r.table(tableName).get("test").run(con) ).isNotNull();
     }
@@ -21,22 +20,22 @@ public class FetchDataIT extends AbstractITTest {
     public void testGetByPKNumber() {
         Assertions.assertThat( r.table(tableName).get(1).run(con) ).isNull();
 
-        r.db(dbName).table(tableName).insert( new DBObjectBuilder().with("id", 1).build() ).run(con);
+        r.db(dbName).table(tableName).insert( new MapObject().with("id", 1) ).run(con);
 
         Assertions.assertThat( r.table(tableName).get(1).run(con) ).isNotNull();
     }
 
     @Test
     public void testGetAll() {
-        Assertions.assertThat( r.table(tableName).getAll(1, 2).run(con) ).isEmpty();
+        Assertions.assertThat( r.table(tableName).getAll(Lists.<Object>newArrayList(1, 2)).run(con) ).isEmpty();
 
-        r.db(dbName).table(tableName).insert( new DBObjectBuilder().with("id", 1).build() ).run(con);
+        r.db(dbName).table(tableName).insert( new MapObject().with("id", 1) ).run(con);
 
-        Assertions.assertThat( r.table(tableName).getAll(1, 2).run(con) ).hasSize(1);
+        Assertions.assertThat( r.table(tableName).getAll(Lists.<Object>newArrayList(1,2)).run(con) ).hasSize(1);
 
-        r.db(dbName).table(tableName).insert( new DBObjectBuilder().with("id", 2).build() ).run(con);
+        r.db(dbName).table(tableName).insert( new MapObject().with("id", 2) ).run(con);
 
-        Assertions.assertThat( r.table(tableName).getAll(1, 2).run(con) ).hasSize(2);
+        Assertions.assertThat( r.table(tableName).getAll(Lists.<Object>newArrayList(1,2)).run(con) ).hasSize(2);
     }
 
     @Test

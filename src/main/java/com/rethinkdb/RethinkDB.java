@@ -1,6 +1,6 @@
 package com.rethinkdb;
 
-import com.rethinkdb.fluent.RTFluentQuery;
+import com.rethinkdb.ast.query.RqlQuery;
 
 /**
  * The starting point for all interaction with RethinkDB. This singleton corresponds to r
@@ -13,7 +13,7 @@ import com.rethinkdb.fluent.RTFluentQuery;
  *     {@code RethinkDB.r.dbCreate("test") }
  * </pre>
  */
-public class RethinkDB extends RTFluentQuery {
+public class RethinkDB extends RqlQuery {
 
     /**
      * The Singleton to use to begin interacting with RethinkDB Driver
@@ -21,6 +21,7 @@ public class RethinkDB extends RTFluentQuery {
     public static RethinkDB r = new RethinkDB();
 
     private RethinkDB() {
+        super(null, null);
     }
 
     /**

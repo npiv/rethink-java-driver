@@ -1,8 +1,7 @@
 package com.rethinkdb.response.model;
 
-import com.rethinkdb.model.DBObject;
-
 import java.util.List;
+import java.util.Map;
 
 public class DMLResult {
     private int inserted;
@@ -13,8 +12,11 @@ public class DMLResult {
     private int deleted;
     private int skipped;
     private List<String> generated_keys;
-    private DBObject old_val;
-    private DBObject new_val;
+    private Map<String, Object> old_val;
+    private Map<String, Object> new_val;
+
+    public DMLResult() {
+    }
 
     @Override
     public String toString() {
@@ -33,7 +35,7 @@ public class DMLResult {
     }
 
     /**
-     *  the number of documents that were succesfully inserted.
+     * the number of documents that were succesfully inserted.
      */
     public int getInserted() {
         return inserted;
@@ -90,17 +92,19 @@ public class DMLResult {
 
     /**
      * if returnVals is set to true, contains null.
+     *
      * @return old value
      */
-    public DBObject getOld_val() {
+    public Map<String, Object> getOld_val() {
         return old_val;
     }
 
     /**
      * if returnVals is set to true, contains the inserted/updated document.
+     *
      * @return new value
      */
-    public DBObject getNew_val() {
+    public Map<String, Object> getNew_val() {
         return new_val;
     }
 }

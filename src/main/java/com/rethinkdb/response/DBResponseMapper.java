@@ -1,8 +1,6 @@
 package com.rethinkdb.response;
 
 import com.rethinkdb.RethinkDBException;
-import com.rethinkdb.model.DBObject;
-import com.rethinkdb.model.DBObjectBuilder;
 import com.rethinkdb.proto.Q2L;
 
 import java.lang.reflect.Field;
@@ -32,13 +30,13 @@ public class DBResponseMapper {
             return (T)handleType(datum);
         }
 
-        // R_OBJECT is DBObject
+        // R_OBJECT is Map
         if (datum.getType() == Q2L.Datum.DatumType.R_OBJECT) {
             Map<String, Object> repr = new HashMap<String, Object>();
             for (Q2L.Datum.AssocPair assocPair : datum.getRObjectList()) {
                 repr.put(assocPair.getKey(), handleType(assocPair.getVal()));
             }
-            return (T)DBObjectBuilder.buildFromMap(repr);
+            return (T)repr;
         }
 
         // Array goes to List
@@ -100,7 +98,7 @@ public class DBResponseMapper {
      * @param <T>  the type of the into object
      * @return the into object
      */
-    public static <T> T populateObject(T to, DBObject from) {
+    public static <T> T populateObject(T to, Map<String,Object> from) {
         for (Field field : to.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -117,16 +115,20 @@ public class DBResponseMapper {
         return to;
     }
 
-    private static Object convertField(Field toField, DBObject from) {
+
+
+    private static Object convertField(Field toField, Map<String, Object> from) {
         if (from.get(toField.getName()) == null) {
             return null;
         }
         if (toField.getType().equals(Integer.class) || toField.getType().equals(int.class)) {
-            return ((Number) from.getAsMap().get(toField.getName())).intValue();
+            return ((Number) from.get(toField.getName())).intValue();
         }
         if (toField.getType().equals(Float.class) || toField.getType().equals(float.class)) {
-            return ((Number) from.getAsMap().get(toField.getName())).floatValue();
+            return ((Number) from.get(toField.getName())).floatValue();
         }
-        return from.getAsMap().get(toField.getName());
+        return from.get(toField.getName());
     }
+
+
 }
