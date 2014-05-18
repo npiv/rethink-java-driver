@@ -2,16 +2,6 @@
 
 [Full Documentation here](http://npiv.github.io/rethink-java-doc/html/)
 
-You can include Java Rethink Driver in your project with
-
-```xml
-<dependency>
-  <groupId>com.rethinkdb</groupId>
-  <artifactId>rethink-java-driver</artifactId>
-  <version>0.2</version>
-</dependency>
-```
-
 ## Examples
 
 The driver supports java 1.6 and up. But to truly get the benefit of the lambda support java 8 is recommended.
