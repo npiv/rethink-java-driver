@@ -9,6 +9,7 @@ public class DBResultFactory {
     }
 
     public static <T> T convert(Q2L.Response response) {
+
         switch (response.getType()) {
             case SUCCESS_ATOM:
                 return DBResponseMapper.fromDatumObject(response.getResponse(0));

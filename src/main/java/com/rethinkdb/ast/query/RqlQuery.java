@@ -8,6 +8,8 @@ import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.gen.*;
 import com.rethinkdb.model.RqlFunction2;
 import com.rethinkdb.proto.Q2L;
+import com.rethinkdb.response.GroupedResponseConverter;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.util.*;
 
@@ -88,6 +90,10 @@ public class RqlQuery {
 
     public Object run(RethinkDBConnection connection) {
         return connection.run(toTerm());
+    }
+
+    public <K,V> Map<K,V> runForGroup(RethinkDBConnection connection) {
+        return GroupedResponseConverter.convert((Map<String, Object>) run(connection));
     }
 
     public DbCreate dbCreate(String dbName) {
@@ -205,8 +211,37 @@ public class RqlQuery {
         return new ConcatMap(this, new Arguments(RqlUtil.funcWrap(function)), null);
     }
 
-    public OrderBy orderBy(Object... indexes) {
-        return new OrderBy(this, new Arguments(indexes), null);
+    public OrderBy orderBy(RqlFunction function) {
+        return orderBy(null, function);
+    }
+
+    public OrderBy orderBy(List<Object> fields, String index) {
+        return orderBy(index, fields);
+    }
+
+    public OrderBy orderBy(Object... fields) {
+        return orderBy(null, fields);
+    }
+
+    public OrderBy orderByIndex(String index) {
+        return orderBy(index, null);
+    }
+
+    public OrderBy orderByField(String field) {
+        return orderBy(null, field);
+    }
+
+    private OrderBy orderBy(String index, Object... fields) {
+        List<Object> args = new ArrayList<Object>();
+        for (Object field : fields) {
+            if (field instanceof Asc || field instanceof Desc) {
+                args.add(field);
+            }
+            else {
+                args.add(RqlUtil.funcWrap(field));
+            }
+        }
+        return new OrderBy(this, new Arguments(args), new OptionalArguments().with("index", index));
     }
 
     public Get get(String key) {
@@ -222,6 +257,8 @@ public class RqlQuery {
     }
 
     public Filter filter(RqlFunction function) { return new Filter(this, new Arguments(new Func(function)), null); }
+
+    public Filter filter(RqlQuery query) { return new Filter(this, new Arguments(query), null); }
 
     public Table table(String tableName) {
         return new Table(this, new Arguments(tableName), null);
@@ -350,5 +387,70 @@ public class RqlQuery {
 
     public Sample sample(int size) {
         return new Sample(this, new Arguments(size), null);
+    }
+
+    public Max max(String field) {
+        return new Max(this, new Arguments(field), null);
+    }
+
+    public Max max(RqlFunction func) {
+        return new Max(this, new Arguments(RqlUtil.funcWrap(func)), null);
+    }
+
+    public Min min(String field) {
+        return new Min(this, new Arguments(field), null);
+    }
+
+    public Min min(RqlFunction func) {
+        return new Min(this, new Arguments(RqlUtil.funcWrap(func)), null);
+    }
+
+    public Group group(RqlFunction func) {
+        return group(func, null);
+    }
+    public Group group(RqlFunction func, String index) {
+        return new Group(this, new Arguments(RqlUtil.funcWrap(func)), new OptionalArguments().with("index",index));
+    }
+    public Group group(String field) {
+        return group(field, null);
+    }
+    public Group group(String field, List index) {
+        return new Group(this, new Arguments(field), new OptionalArguments().with("index",index));
+    }
+
+    public Ungroup ungroup() {
+        return new Ungroup(this, null, null);
+    }
+
+    public Reduce reduce(RqlFunction2 func) {
+        return new Reduce(this, new Arguments(RqlUtil.funcWrap(func)), null);
+    }
+
+    public Sum sum() {
+        return new Sum(this, null, null);
+    }
+
+    public Avg avg() {
+        return new Avg(this, null, null);
+    }
+
+    public Min min() {
+        return new Min(this, null, null);
+    }
+
+    public Max max() {
+        return new Max(this, null, null);
+    }
+
+    public Distinct distinct() {
+        return new Distinct(this, null, null);
+    }
+
+    public Contains contains(List<Object> objects) {
+        List<Object> args = new ArrayList<Object>();
+        for (Object object : objects) {
+            args.add(RqlUtil.funcWrap(object));
+        }
+        return new Contains(this, args, null);
     }
 }

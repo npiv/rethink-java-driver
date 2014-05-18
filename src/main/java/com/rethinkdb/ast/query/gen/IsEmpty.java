@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -15,6 +16,11 @@ public class IsEmpty extends RqlQuery {
 
     public IsEmpty(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.IS_EMPTY, args, optionalArgs);
+    }
+
+    @Override
+    public Boolean run(RethinkDBConnection connection) {
+        return (Boolean) super.run(connection);
     }
 }
         

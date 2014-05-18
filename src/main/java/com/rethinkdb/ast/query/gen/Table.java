@@ -1,6 +1,7 @@
 package com.rethinkdb.ast.query.gen;
 
 import com.google.common.collect.Lists;
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
 import com.rethinkdb.ast.query.RqlQuery;
@@ -9,6 +10,7 @@ import com.rethinkdb.model.Durability;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.proto.Q2L;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +25,8 @@ public class Table extends RqlQuery {
     public Insert insert(Map<String,Object> dbObject, Durability durability, Boolean returnVals, Boolean upsert) {
         return insert(Lists.newArrayList(dbObject), durability, returnVals, upsert);
     }
-    public Insert insert(Map<String,Object> dbObject) {
-        return insert(dbObject, null, null, null);
+    public Insert insert(Map<String,Object>... dbObject) {
+        return insert(Arrays.asList(dbObject), null, null, null);
     }
 
     public Insert insert(List<Map<String,Object>> dbObjects) {
@@ -74,6 +76,19 @@ public class Table extends RqlQuery {
 
     public IndexList indexList() {
         return new IndexList(this, null, null);
+    }
+
+    public IndexStatus indexStatus(String... indexNames) {
+        return new IndexStatus(this, new Arguments(indexNames), null);
+    }
+
+    public IndexWait indexWait(String... indexNames) {
+        return new IndexWait(this, new Arguments(indexNames), null);
+    }
+
+    @Override
+    public List<Map<String,Object>> run(RethinkDBConnection connection) {
+        return (List<Map<String, Object>>) super.run(connection);
     }
 }
         

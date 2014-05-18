@@ -4,10 +4,16 @@ public class DDLResult {
     private int created;
     private int dropped;
 
+    /**
+     * The number of created entities
+     */
     public int getCreated() {
         return created;
     }
 
+    /**
+     * The number of dropped entities
+     */
     public int getDropped() {
         return dropped;
     }

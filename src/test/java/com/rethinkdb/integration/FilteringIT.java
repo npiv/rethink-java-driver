@@ -15,11 +15,11 @@ public class FilteringIT extends AbstractITTest {
 
     @Before
     public void setUpSimpleTable() {
-        r.db(dbName).table(tableName).insert(Lists.<Map<String,Object>>newArrayList(
+        r.db(dbName).table(tableName).insert(
                 new MapObject().with("name", "superman").with("age", 30),
                 new MapObject().with("name", "spiderman").with("age", 23),
                 new MapObject().with("name", "heman").with("age", 55)
-        )).run(con);
+        ).run(con);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class FilteringIT extends AbstractITTest {
 
     @Test
     public void testOrder() {
-        List<Double> run = r.db(dbName).table(tableName).orderBy("age").map(new RqlFunction() {
+        List<Double> run = r.db(dbName).table(tableName).orderByField("age").map(new RqlFunction() {
             @Override
             public RqlQuery apply(RqlQuery row) {
                 return row.field("age");

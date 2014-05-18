@@ -45,9 +45,18 @@ public class FetchDataIT extends AbstractITTest {
     public void testWithFields() {
         r.db(dbName).table(tableName).insert( new MapObject().with("id", 1).with("name", "john").with("age",22) ).run(con);
 
-        List<Map<String, Object>> result = (List<Map<String, Object>>) r.table(tableName).withFields("name","age").run(con);
+        List<Map<String, Object>> result = r.table(tableName).withFields("name","age").run(con);
         Assertions.assertThat(result).hasSize(1);
         Assertions.assertThat(result.get(0).get("id")).isNull();
+        Assertions.assertThat(result.get(0).get("name")).isEqualTo("john");
+    }
+
+    @Test
+    public void testWithOneFields() {
+        r.db(dbName).table(tableName).insert( new MapObject().with("id", 1).with("name", "john").with("age",22) ).run(con);
+
+        List<Map<String, Object>> result = (List<Map<String, Object>>) r.table(tableName).withFields("name").run(con);
+        Assertions.assertThat(result).hasSize(1);
         Assertions.assertThat(result.get(0).get("name")).isEqualTo("john");
     }
 

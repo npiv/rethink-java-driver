@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -15,6 +16,10 @@ public class Max extends RqlQuery {
 
     public Max(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.MAX, args, optionalArgs);
+    }
+
+    public <T> T runTyped(RethinkDBConnection connection) {
+        return (T)super.run(connection);
     }
 }
         

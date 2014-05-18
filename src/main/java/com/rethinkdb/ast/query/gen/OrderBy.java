@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -15,6 +16,11 @@ public class OrderBy extends RqlQuery {
 
     public OrderBy(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.ORDERBY, args, optionalArgs);
+    }
+
+    @Override
+    public List<Map<String,Object>> run(RethinkDBConnection connection) {
+        return (List<Map<String, Object>>) super.run(connection);
     }
 }
         
