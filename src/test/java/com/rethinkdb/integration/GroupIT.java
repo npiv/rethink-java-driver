@@ -42,6 +42,16 @@ public class GroupIT extends AbstractITTest {
 
     @Test
     public void testSum() {
-        Assertions.assertThat(r.expr(Lists.newArrayList(3, 5, 7)).sum().run(con)).isEqualTo(15);
+        Assertions.assertThat(r.expr(Lists.newArrayList(3, 5, 7)).sum().run(con)).isEqualTo(15.0);
+    }
+
+    @Test
+    public void testHasFields() {
+        Assertions.assertThat(r.table(tableName).hasFields(Lists.newArrayList("points")).run(con)).hasSize(4);
+    }
+
+    @Test
+    public void testInsertAt() {
+        Assertions.assertThat(r.expr(Lists.newArrayList("a","b")).insertAt(1,"c").run(con)).hasSize(3);
     }
 }

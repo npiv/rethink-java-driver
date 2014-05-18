@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -15,6 +16,11 @@ public class Split extends RqlQuery {
 
     public Split(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.SPLIT, args, optionalArgs);
+    }
+
+    @Override
+    public List<String> run(RethinkDBConnection connection) {
+        return (List<String>) super.run(connection);
     }
 }
         

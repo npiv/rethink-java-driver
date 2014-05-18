@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -16,5 +17,11 @@ public class Keys extends RqlQuery {
     public Keys(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.KEYS, args, optionalArgs);
     }
+
+    @Override
+    public  List<String>  run(RethinkDBConnection connection) {
+        return (List<String>) super.run(connection);
+    }
+
 }
         

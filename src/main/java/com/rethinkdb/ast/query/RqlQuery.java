@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query;
 
+import com.google.common.collect.Lists;
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
@@ -11,6 +12,7 @@ import com.rethinkdb.proto.Q2L;
 import com.rethinkdb.response.GroupedResponseConverter;
 import sun.security.krb5.internal.crypto.Des;
 
+import java.security.Key;
 import java.util.*;
 
 public class RqlQuery {
@@ -228,7 +230,7 @@ public class RqlQuery {
     }
 
     public OrderBy orderByField(String field) {
-        return orderBy(null, field);
+        return orderBy((String)null, field);
     }
 
     private OrderBy orderBy(String index, Object... fields) {
@@ -284,8 +286,16 @@ public class RqlQuery {
         return new Replace(this, new Arguments(new Func(function)), null);
     }
 
-    public RqlQuery without(String field) {
+    public RqlQuery without(String... fields) {
+        return without(Lists.newArrayList(fields));
+    }
+
+    public RqlQuery without(List<String> field) {
         return new Without(this, new Arguments(field), null);
+    }
+
+    public Pluck pluck(String... fields) {
+        return pluck(Lists.newArrayList(fields));
     }
 
     public Pluck pluck(List<String> fields) {
@@ -294,6 +304,18 @@ public class RqlQuery {
 
     public Branch branch(RqlQuery predicate, Map<String,Object> trueBranch, Map<String,Object> falseBranch) {
         return new Branch(predicate, new Arguments(trueBranch, falseBranch), null);
+    }
+
+    public Append append(Object t) {
+        return new Append(this, new Arguments(t), null);
+    }
+
+    public Prepend prepend(Object t) {
+        return new Prepend(this, new Arguments(t), null);
+    }
+
+    public Difference difference(List<Object> ts) {
+        return new Difference(this, new Arguments(ts), null);
     }
 
     public Delete delete() {
@@ -453,4 +475,49 @@ public class RqlQuery {
         }
         return new Contains(this, args, null);
     }
+
+    public SetInsert setInsert(List<Object> objects) {
+        return new SetInsert(null, new Arguments(objects), null);
+    }
+
+    public SetUnion setUnion(List<Object> objects) {
+        return new SetUnion(null, new Arguments(objects), null);
+    }
+
+    public SetIntersection setIntersection(List<Object> objects) {
+        return new SetIntersection(null, new Arguments(objects), null);
+    }
+
+    public SetDifference setDifference(List<Object> objects) {
+        return new SetDifference(null, new Arguments(objects), null);
+    }
+
+    public HasFields hasFields(List<String> fields) {
+        return new HasFields(this, new Arguments(fields), null);
+    }
+
+    public InsertAt insertAt(int index, Object value) {
+        return new InsertAt(this, new Arguments(index, value), null);
+    }
+
+    public SpliceAt spliceAt(int index, List<Object> values) {
+        return new SpliceAt(this, new Arguments(index, values), null);
+    }
+
+    public DeleteAt deleteAt(int index) {
+        return new DeleteAt(this, new Arguments(index), null);
+    }
+
+    public DeleteAt deleteAt(int index, int endIndex) {
+        return new DeleteAt(this, new Arguments(index, endIndex), null);
+    }
+
+    public ChangeAt changeAt(int index, Object value) {
+        return new ChangeAt(this, new Arguments(index, value), null);
+    }
+
+    public Keys keys() {
+        return new Keys(this, null, null);
+    }
+
 }
