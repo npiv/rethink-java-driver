@@ -39,7 +39,7 @@ System.out.println(
                                 new MapObject().with("newAttribute", "young")
                         )
         ).run(con)
-); // InsertResult{inserted=0, replaced=4, unchanged=0, errors=0, first_error=null, deleted=0, skipped=0, generated_keys=null, old_val=null, new_val=null}
+); // DMLResult{inserted=0, replaced=4, unchanged=0, errors=0, first_error=null, deleted=0, skipped=0, generated_keys=null, old_val=null, new_val=null}
 
 System.out.println(
         r.table("heros").pluck("name","newAttribute").run(con)
