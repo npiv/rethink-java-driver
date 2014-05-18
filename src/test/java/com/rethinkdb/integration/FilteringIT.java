@@ -8,6 +8,7 @@ import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 public class FilteringIT extends AbstractITTest {
@@ -52,5 +53,30 @@ public class FilteringIT extends AbstractITTest {
                 }
                 ).run(con).size()
         ).isEqualTo(2);
+    }
+
+    @Test
+    public void testOrder() {
+        List<Double> run = r.db(dbName).table(tableName).orderBy("age").map(new RqlFunction() {
+            @Override
+            public RqlQuery apply(RqlQuery row) {
+                return row.field("age");
+            }
+        }).runTyped(con);
+
+        Assertions.assertThat(run).containsExactly(23.0,30.0,55.0);
+    }
+
+
+    @Test
+    public void testOrderDesc() {
+        List<Double> run = r.db(dbName).table(tableName).orderBy(r.desc("age"), r.asc("name")).map(new RqlFunction() {
+            @Override
+            public RqlQuery apply(RqlQuery row) {
+                return row.field("age");
+            }
+        }).runTyped(con);
+
+        Assertions.assertThat(run).containsExactly(55.0,30.0,23.0);
     }
 }

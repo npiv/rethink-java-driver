@@ -61,4 +61,19 @@ public class StringsIT extends AbstractITTest {
 
         Assertions.assertThat(strings.get(0).get(0)).isEqualToIgnoringCase("aaa");
     }
+
+    @Test
+    public void testMatch() {
+        Map<String, Object> dbObj = new MapObject().with("id", 1).with("field1", "abc");
+        r.db(dbName).table(tableName).insert(dbObj).run(con);
+
+        List list = r.db(dbName).table(tableName).filter(new RqlFunction() {
+            @Override
+            public RqlQuery apply(RqlQuery row) {
+                return row.field("field1").match("a.c");
+            }
+        }).run(con());
+
+        Assertions.assertThat(list).hasSize(1);
+    }
 }

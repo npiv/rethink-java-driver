@@ -19,8 +19,8 @@ public class Filter extends RqlQuery {
     }
 
     @Override
-    public List run(RethinkDBConnection connection) {
-        return (List)super.run(connection);
+    public List<Map<String,Object>> run(RethinkDBConnection connection) {
+        return (List<Map<String,Object>>)super.run(connection);
     }
 }
         

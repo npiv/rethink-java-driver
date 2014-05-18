@@ -115,6 +115,20 @@ public class DBResponseMapper {
         return to;
     }
 
+    public static <T> List<T> populateList(Class<T> clazz, List<Map<String, Object>> from) {
+        List<T> results = new ArrayList<T>();
+        for (Map<String, Object> stringObjectMap : from) {
+            try {
+                results.add(populateObject(clazz.newInstance(),stringObjectMap));
+            } catch (InstantiationException e) {
+                throw new RethinkDBException("Error instantiating " + clazz, e);
+            } catch (IllegalAccessException e) {
+                throw new RethinkDBException("Illegal access on " + clazz, e);
+            }
+        }
+        return results;
+    }
+
 
 
     private static Object convertField(Field toField, Map<String, Object> from) {

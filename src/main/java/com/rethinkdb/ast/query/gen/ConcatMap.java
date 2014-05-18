@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.proto.Q2L;
 
@@ -15,6 +16,15 @@ public class ConcatMap extends RqlQuery {
 
     public ConcatMap(RqlQuery prev, List<Object> args, Map<String, Object> optionalArgs) {
         super(prev, Q2L.Term.TermType.CONCATMAP, args, optionalArgs);
+    }
+
+    @Override
+    public List run(RethinkDBConnection connection) {
+        return (List)super.run(connection);
+    }
+
+    public <T> List<T> runTyped(RethinkDBConnection connection) {
+        return (List<T>)super.run(connection);
     }
 }
         

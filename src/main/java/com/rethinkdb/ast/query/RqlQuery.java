@@ -6,6 +6,7 @@ import com.rethinkdb.ast.helper.OptionalArguments;
 import com.rethinkdb.model.Durability;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.gen.*;
+import com.rethinkdb.model.RqlFunction2;
 import com.rethinkdb.proto.Q2L;
 
 import java.util.*;
@@ -35,6 +36,10 @@ public class RqlQuery {
     public RqlQuery(RqlQuery previous, Q2L.Term.TermType termType, List<Object> args, Map<String, Object> optionalArgs) {
         this.termType = termType;
 
+        init(previous, args, optionalArgs);
+    }
+
+    protected void init(RqlQuery previous, List<Object> args, Map<String, Object> optionalArgs) {
         if (previous != null && previous.termType != null) {
             this.args.add(previous);
         }
@@ -196,6 +201,26 @@ public class RqlQuery {
         return new RMap(this, new Arguments(new Func(function)), null);
     }
 
+    public ConcatMap concatMap(RqlFunction function) {
+        return new ConcatMap(this, new Arguments(RqlUtil.funcWrap(function)), null);
+    }
+
+    public OrderBy orderBy(Object... indexes) {
+        return new OrderBy(this, new Arguments(indexes), null);
+    }
+
+    public Get get(String key) {
+        return new Get(this, new Arguments(key), null);
+    }
+
+    public GetAll get(List<String> keys) {
+        return get(keys, null);
+    }
+
+    public GetAll get(List<String> keys, String index) {
+        return new GetAll(this, new Arguments(keys), new OptionalArguments().with("index", index));
+    }
+
     public Filter filter(RqlFunction function) { return new Filter(this, new Arguments(new Func(function)), null); }
 
     public Table table(String tableName) {
@@ -246,7 +271,6 @@ public class RqlQuery {
         return new Count(this, null, null);
     }
 
-    // todo test
     public Sync sync() {
         return new Sync(this, null, null);
     }
@@ -261,5 +285,70 @@ public class RqlQuery {
 
     public WithFields withFields(String... fields) {
         return new WithFields(this, new Arguments(fields), null);
+    }
+
+    public InnerJoin innerJoin(RqlQuery other, RqlFunction2 predicate) {
+        return new InnerJoin(this, new Arguments(other, RqlUtil.funcWrap(predicate)), null);
+    }
+
+    public OuterJoin outerJoin(RqlQuery other, RqlFunction2 predicate) {
+        return new OuterJoin(this, new Arguments(other, RqlUtil.funcWrap(predicate)), null);
+    }
+
+    public EqJoin eqJoin(String leftAttribute, Table otherTable) {
+        return eqJoin(leftAttribute, otherTable, null);
+    }
+
+    public EqJoin eqJoin(String leftAttribute, Table otherTable, String indexId) {
+        return new EqJoin(this, new Arguments(leftAttribute, otherTable), new OptionalArguments().with("index",indexId));
+    }
+
+    public EqJoin eqJoin(RqlFunction leftAttribute, Table otherTable) {
+        return eqJoin(leftAttribute, otherTable, null);
+    }
+
+    public EqJoin eqJoin(RqlFunction leftAttribute, Table otherTable, String indexId) {
+        return new EqJoin(this, new Arguments(RqlUtil.funcWrap(leftAttribute), otherTable), new OptionalArguments().with("index",indexId));
+    }
+
+    public Zip zip() {
+        return new Zip(this, null, null);
+    }
+
+
+    public Desc desc(String key) {
+        return new Desc(this, new Arguments(key), null);
+    }
+
+    public Asc asc(String key) {
+        return new Asc(this, new Arguments(key), null);
+    }
+
+    public Skip skip(int n) {
+        return new Skip(this, new Arguments(n), null);
+    }
+
+    public Limit limit(int n) {
+        return new Limit(this, new Arguments(n), null);
+    }
+
+    public IndexesOf indexesOf(Object value) {
+        return new IndexesOf(this, new Arguments(value), null);
+    }
+
+    public IndexesOf indexesOf(RqlQuery predicate) {
+        return new IndexesOf(this, new Arguments(RqlUtil.funcWrap(predicate)), null);
+    }
+
+    public IsEmpty isEmpty() {
+        return new IsEmpty(this, null, null);
+    }
+
+    public Union union(RqlQuery other) {
+        return new Union(this, new Arguments(other), null);
+    }
+
+    public Sample sample(int size) {
+        return new Sample(this, new Arguments(size), null);
     }
 }

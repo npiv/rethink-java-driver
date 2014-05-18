@@ -184,4 +184,11 @@ public class ModifyDataIT extends AbstractITTest {
 
     }
 
+    @Test
+    public void testSync() {
+        r.table(tableName).sync(); // no crash
+    }
+
+
+
 }

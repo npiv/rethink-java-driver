@@ -7,6 +7,7 @@ import com.rethinkdb.ast.query.gen.Datum;
 import com.rethinkdb.ast.query.gen.Func;
 import com.rethinkdb.ast.query.gen.MakeArray;
 import com.rethinkdb.ast.query.gen.MakeObj;
+import com.rethinkdb.model.RqlLambda;
 import com.rethinkdb.proto.Q2L;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -50,8 +51,8 @@ public class RqlUtil {
             return new MakeObj(obj);
         }
 
-        if (val instanceof RqlFunction) {
-            return new Func((RqlFunction) val);
+        if (val instanceof RqlLambda) {
+            return new Func((RqlLambda) val);
         }
 
         if (val instanceof Date) {
