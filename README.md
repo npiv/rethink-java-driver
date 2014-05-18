@@ -1,24 +1,69 @@
 ## Introduction
 
-[Full Documentation, sample code here](http://npiv.github.io/rethink-java-doc/html/)
+[Full Documentation here](http://npiv.github.io/rethink-java-doc/html/)
 
-The Rethink Java Driver aims to be a fully feature complete driver closely mirroring the existing ruby/python/js implementations. Due to limitations of java being a typed language some inspiration will be sought from existing java big data drivers like mongo to make the api as fluent as possible for the end user.
+You can include Java Rethink Driver in your project with
 
-## Milestones
+```xml
+	<dependency>
+	  <groupId>com.rethinkdb</groupId>
+	  <artifactId>rethink-java-driver</artifactId>
+	  <version>0.2</version>
+	</dependency>
+```
 
- * complete implementation of all methods in the `python api <http://rethinkdb.com/api/python/>`_
- * complete integration test of all methods. (these should grow together)
- * ORM module 
- * Spring data integration
- * DB connection pooling
+## Examples
 
-## Get involved
+The driver supports java 1.6 and up. But to truly get the benefit of the lambda support java 8 is recommended.
 
-Development has only started recently. And whilst the first milestone should be hit within the next 2 weeks, there is still plenty to do. contact me on github, or send me a mail at nick.verlinde on the google mail.
+in java 8 one can do something Like
 
-## What works
+```java
 
-See API Documentation and examples here: [http://npiv.github.io/rethink-java-doc/html](http://npiv.github.io/rethink-java-doc/html/)
+	RethinkDB r = RethinkDB.r;
+	RethinkDBConnection con = r.connect();
+
+	r.db("test").tableCreate("heros").run(con);
+	con.use("test");
+
+	r.table("heros").insert(
+	        new MapObject().with("name", "Heman").with("age", 33).with("skill", "sword"),
+	        new MapObject().with("name", "Spiderman").with("age", 27).with("skill", "jumping"),
+	        new MapObject().with("name", "Superman").with("age", 133).with("skill", "flying"),
+	        new MapObject().with("name", "Xena").with("age", 29).with("skill", "wowza")
+	).run(con);
+
+	System.out.println(
+	        r.table("heros").filter(hero->hero.field("age").gt(100)).pluck("age").run(con)
+	); // [{age=133.0}]
+
+	System.out.println(
+	        r.table("heros").orderBy(r.desc("age")).map(hero -> hero.field("name").upcase()).run(con)
+	); // [SUPERMAN, HEMAN, XENA, SPIDERMAN]
+
+	System.out.println(
+	        r.table("heros").update(row ->
+	                        r.branch(
+	                                row.field("age").gt(100),
+	                                new MapObject().with("newAttribute", "old"),
+	                                new MapObject().with("newAttribute", "young")
+	                        )
+	        ).run(con)
+	); // InsertResult{inserted=0, replaced=4, unchanged=0, errors=0, first_error=null, deleted=0, skipped=0, generated_keys=null, old_val=null, new_val=null}
+
+	System.out.println(
+	        r.table("heros").pluck("name","newAttribute").run(con)
+	); // [
+	   // {newAttribute=young, name=Xena},
+	   // {newAttribute=young, name=Spiderman},
+	   // {newAttribute=old,   name=Superman},
+	   // {newAttribute=young, name=Heman}
+	   // ]
+
+
+```
+
+See API Documentation and more examples here: [http://npiv.github.io/rethink-java-doc/html](http://npiv.github.io/rethink-java-doc/html/)
 
 ### Apache License 2.0
 ```
