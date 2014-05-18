@@ -5,11 +5,11 @@
 You can include Java Rethink Driver in your project with
 
 ```xml
-	<dependency>
-	  <groupId>com.rethinkdb</groupId>
-	  <artifactId>rethink-java-driver</artifactId>
-	  <version>0.2</version>
-	</dependency>
+<dependency>
+  <groupId>com.rethinkdb</groupId>
+  <artifactId>rethink-java-driver</artifactId>
+  <version>0.2</version>
+</dependency>
 ```
 
 ## Examples
@@ -20,45 +20,45 @@ in java 8 one can do something Like
 
 ```java
 
-	RethinkDB r = RethinkDB.r;
-	RethinkDBConnection con = r.connect();
+RethinkDB r = RethinkDB.r;
+RethinkDBConnection con = r.connect();
 
-	r.db("test").tableCreate("heros").run(con);
-	con.use("test");
+r.db("test").tableCreate("heros").run(con);
+con.use("test");
 
-	r.table("heros").insert(
-	        new MapObject().with("name", "Heman").with("age", 33).with("skill", "sword"),
-	        new MapObject().with("name", "Spiderman").with("age", 27).with("skill", "jumping"),
-	        new MapObject().with("name", "Superman").with("age", 133).with("skill", "flying"),
-	        new MapObject().with("name", "Xena").with("age", 29).with("skill", "wowza")
-	).run(con);
+r.table("heros").insert(
+        new MapObject().with("name", "Heman").with("age", 33).with("skill", "sword"),
+        new MapObject().with("name", "Spiderman").with("age", 27).with("skill", "jumping"),
+        new MapObject().with("name", "Superman").with("age", 133).with("skill", "flying"),
+        new MapObject().with("name", "Xena").with("age", 29).with("skill", "wowza")
+).run(con);
 
-	System.out.println(
-	        r.table("heros").filter(hero->hero.field("age").gt(100)).pluck("age").run(con)
-	); // [{age=133.0}]
+System.out.println(
+        r.table("heros").filter(hero->hero.field("age").gt(100)).pluck("age").run(con)
+); // [{age=133.0}]
 
-	System.out.println(
-	        r.table("heros").orderBy(r.desc("age")).map(hero -> hero.field("name").upcase()).run(con)
-	); // [SUPERMAN, HEMAN, XENA, SPIDERMAN]
+System.out.println(
+        r.table("heros").orderBy(r.desc("age")).map(hero -> hero.field("name").upcase()).run(con)
+); // [SUPERMAN, HEMAN, XENA, SPIDERMAN]
 
-	System.out.println(
-	        r.table("heros").update(row ->
-	                        r.branch(
-	                                row.field("age").gt(100),
-	                                new MapObject().with("newAttribute", "old"),
-	                                new MapObject().with("newAttribute", "young")
-	                        )
-	        ).run(con)
-	); // InsertResult{inserted=0, replaced=4, unchanged=0, errors=0, first_error=null, deleted=0, skipped=0, generated_keys=null, old_val=null, new_val=null}
+System.out.println(
+        r.table("heros").update(row ->
+                        r.branch(
+                                row.field("age").gt(100),
+                                new MapObject().with("newAttribute", "old"),
+                                new MapObject().with("newAttribute", "young")
+                        )
+        ).run(con)
+); // InsertResult{inserted=0, replaced=4, unchanged=0, errors=0, first_error=null, deleted=0, skipped=0, generated_keys=null, old_val=null, new_val=null}
 
-	System.out.println(
-	        r.table("heros").pluck("name","newAttribute").run(con)
-	); // [
-	   // {newAttribute=young, name=Xena},
-	   // {newAttribute=young, name=Spiderman},
-	   // {newAttribute=old,   name=Superman},
-	   // {newAttribute=young, name=Heman}
-	   // ]
+System.out.println(
+        r.table("heros").pluck("name","newAttribute").run(con)
+); // [
+   // {newAttribute=young, name=Xena},
+   // {newAttribute=young, name=Spiderman},
+   // {newAttribute=old,   name=Superman},
+   // {newAttribute=young, name=Heman}
+   // ]
 
 
 ```
