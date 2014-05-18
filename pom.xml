@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rethinkdb</groupId>
     <artifactId>rethink-java-driver</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>rethink-java-driver</name>
     <description>A Java RethinkDB Driver</description>
@@ -41,7 +41,7 @@
         <url>https://github.com/npiv/rethink-java-driver</url>
         <connection>scm:git:git://github.com/npiv/rethink-java-driver.git</connection>
         <developerConnection>scm:git:git@github.com:npiv/rethink-java-driver.git</developerConnection>
-      <tag>rethink-java-driver-0.2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <developers>
