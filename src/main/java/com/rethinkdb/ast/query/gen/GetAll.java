@@ -1,5 +1,6 @@
 package com.rethinkdb.ast.query.gen;
 
+import com.rethinkdb.Cursor;
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
@@ -21,8 +22,8 @@ public class GetAll extends RqlQuery {
     }
 
     @Override
-    public List<Map<String,Object>> run(RethinkDBConnection connection) {
-        return (List<Map<String,Object>>)super.run(connection);
+    public Cursor<Map<String,Object>> run(RethinkDBConnection connection) {
+        return connection.runForCursor(toTerm());
     }
 }
         
