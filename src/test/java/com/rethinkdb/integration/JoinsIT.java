@@ -64,7 +64,6 @@ public class JoinsIT extends AbstractITTest {
                 }
         ).run(con);
 
-        System.out.println(result);
         Assertions.assertThat(result).hasSize(3);
     }
 
