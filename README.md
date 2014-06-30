@@ -10,7 +10,7 @@ Include in your pom with
 <dependency>
     <groupId>com.rethinkdb</groupId>
     <artifactId>rethink-java-driver</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 </dependency>
 ```
 
