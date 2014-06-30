@@ -1,17 +1,17 @@
 package com.rethinkdb.ast.query;
 
+import com.rethinkdb.RethinkDB;
 import com.rethinkdb.RethinkDBException;
+import com.rethinkdb.ast.query.gen.*;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.RqlQuery;
-import com.rethinkdb.ast.query.gen.Datum;
-import com.rethinkdb.ast.query.gen.Func;
-import com.rethinkdb.ast.query.gen.MakeArray;
-import com.rethinkdb.ast.query.gen.MakeObj;
 import com.rethinkdb.model.RqlLambda;
 import com.rethinkdb.proto.Q2L;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.Map;
@@ -56,7 +56,10 @@ public class RqlUtil {
         }
 
         if (val instanceof Date) {
-            throw new NotImplementedException();
+            TimeZone tz = TimeZone.getTimeZone("UTC");
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+            df.setTimeZone(tz);
+            return RethinkDB.R.ISO8601(df.format((Date) val));
         }
 
         return new Datum(val);

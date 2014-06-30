@@ -1,13 +1,11 @@
 package com.rethinkdb.response;
 
 import com.rethinkdb.RethinkDBException;
+import com.rethinkdb.ast.query.gen.Timezone;
 import com.rethinkdb.proto.Q2L;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DBResponseMapper {
 
@@ -34,6 +32,11 @@ public class DBResponseMapper {
         if (datum.getType() == Q2L.Datum.DatumType.R_OBJECT) {
             Map<String, Object> repr = new HashMap<String, Object>();
             for (Q2L.Datum.AssocPair assocPair : datum.getRObjectList()) {
+
+                if (assocPair.getKey().equals("$reql_type$") && "TIME".equals(assocPair.getVal().getRStr())) {
+                    return (T)asDate(datum);
+                }
+
                 repr.put(assocPair.getKey(), handleType(assocPair.getVal()));
             }
             return (T)repr;
@@ -46,6 +49,32 @@ public class DBResponseMapper {
 
         throw new RethinkDBException("Can't map datum to JavaObject for {}" + datum.getType());
 
+    }
+
+    private static Date asDate(Q2L.Datum datum) {
+        String timezone = "";
+        Double epoch_time = 0.0;
+
+        for (Q2L.Datum.AssocPair assocPair : datum.getRObjectList()) {
+
+            if (assocPair.getKey().equals("epoch_time")) {
+                epoch_time = assocPair.getVal().getRNum();
+            }
+            if (assocPair.getKey().equals("timezone")) {
+                timezone = assocPair.getVal().getRStr();
+            }
+
+        }
+
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(epoch_time.longValue() * 1000);
+            calendar.setTimeZone(TimeZone.getTimeZone(timezone));
+            return calendar.getTime();
+        }
+        catch (Exception ex) {
+            throw new RethinkDBException("Error handling date",ex);
+        }
     }
 
     /**

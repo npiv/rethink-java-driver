@@ -139,7 +139,6 @@ public class ModifyDataIT extends AbstractITTest {
             }
         }).run(con);
 
-        System.out.println(result);
         Assertions.assertThat(result.getReplaced()).isEqualTo(1);
     }
 

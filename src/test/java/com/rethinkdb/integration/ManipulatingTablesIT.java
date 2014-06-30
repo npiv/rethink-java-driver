@@ -40,8 +40,6 @@ public class ManipulatingTablesIT extends AbstractITTest {
     public void testIndexStatus() {
         Assertions.assertThat(r.db(dbName).table(tableName).indexCreate("wee").run(con).getCreated()).isEqualTo(1);
         Assertions.assertThat(r.db(dbName).table(tableName).indexStatus().run(con()).get(0).isReady()).isTrue();
-
-        System.out.println(r.db(dbName).table(tableName).indexWait().run(con()));
     }
 
 

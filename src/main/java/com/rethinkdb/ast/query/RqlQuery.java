@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
+import com.rethinkdb.ast.query.gen.Date;
 import com.rethinkdb.model.Durability;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.gen.*;
@@ -518,6 +519,93 @@ public class RqlQuery {
 
     public Keys keys() {
         return new Keys(this, null, null);
+    }
+
+    public Now now() { return new Now(this, null, null); }
+
+    public Date date() { return new Date(this, null, null); }
+
+    public Time time(int year, int month, int day) {
+        return time(year,month,day,"Z");
+    }
+
+    public Time time(int year, int month, int day, String timezone) {
+        return new Time(this, new Arguments(year,month,day, timezone), null);
+    }
+
+    public Time time(int year, int month, int day, int hour, int minute, int second) {
+        return time(year,month,day,hour,minute,second);
+    }
+
+    public Time time(int year, int month, int day, int hour, int minute, int second, String timezone) {
+        return new Time(this, new Arguments(year,month,day,hour,minute,second, timezone), null);
+    }
+
+    public EpochTime epochTime(long time) {
+        return new EpochTime(this, new Arguments(time), null);
+    }
+
+    public ISO8601 ISO8601(String iso) {
+        return new ISO8601(this, new Arguments(iso), null);
+    }
+
+    public InTimezone inTimezone(String tz) {
+        return new InTimezone(this, new Arguments(tz), null);
+    }
+
+    public Timezone timezone(String tz) {
+        return new Timezone(this, new Arguments(tz), null);
+    }
+
+    public During during(RqlQuery left, RqlQuery right, boolean leftInclusive, boolean rightInclusive) {
+        return new During(this, new Arguments(left, right), new OptionalArguments()
+                .with("left_bound", !leftInclusive ? "open" : "closed")
+                .with("right_bound", !rightInclusive ? "open" : "closed")
+        );
+    }
+
+    public TimeOfDay timeOfDay() {
+        return new TimeOfDay(this, null, null);
+    }
+
+    public Year year() {
+        return new Year(this, null, null);
+    }
+
+    public Month month() {
+        return new Month(this, null, null);
+    }
+
+    public Day day() {
+        return new Day(this, null, null);
+    }
+
+    public DayOfWeek dayOfWeek() {
+        return new DayOfWeek(this, null, null);
+    }
+
+    public DayOfYear dayOfYear() {
+        return new DayOfYear(this, null, null);
+    }
+
+    public Hours hours() {
+        return new Hours(this, null, null);
+    }
+
+    public Minutes minutes() {
+        return new Minutes(this, null, null);
+    }
+
+    public Seconds seconds() {
+        return new Seconds(this, null, null);
+    }
+
+    public ToISO8601 toISO8601() {
+        return new ToISO8601(this, null, null);
+    }
+
+    public ToEpochTime toEpochTime() {
+        return new ToEpochTime(this, null, null);
     }
 
 }

@@ -74,7 +74,6 @@ public class StringsIT extends AbstractITTest {
             }
         }).run(con());
 
-        System.out.println(list);
         Assertions.assertThat(list).hasSize(1);
     }
 }
