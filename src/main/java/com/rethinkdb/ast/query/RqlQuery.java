@@ -477,19 +477,19 @@ public class RqlQuery {
     }
 
     public SetInsert setInsert(List<Object> objects) {
-        return new SetInsert(null, new Arguments(objects), null);
+        return new SetInsert(this, new Arguments(objects), null);
     }
 
     public SetUnion setUnion(List<Object> objects) {
-        return new SetUnion(null, new Arguments(objects), null);
+        return new SetUnion(this, new Arguments(objects), null);
     }
 
     public SetIntersection setIntersection(List<Object> objects) {
-        return new SetIntersection(null, new Arguments(objects), null);
+        return new SetIntersection(this, new Arguments(objects), null);
     }
 
     public SetDifference setDifference(List<Object> objects) {
-        return new SetDifference(null, new Arguments(objects), null);
+        return new SetDifference(this, new Arguments(objects), null);
     }
 
     public HasFields hasFields(List<String> fields) {
