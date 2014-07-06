@@ -2,6 +2,7 @@ package com.rethinkdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.rethinkdb.proto.Q2L;
+import com.rethinkdb.util.ThreadUtil;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -58,6 +59,8 @@ public class SocketChannelFacade {
 
     public int readLEInt() {
         ByteBuffer buffer = _read(4, true);
+        ThreadUtil.sleep(1); // TODO: this resolves an issue, need to figure out if there is a delay on rethink side,
+                             // and or if this can be considered normal
         return buffer.getInt();
     }
 
