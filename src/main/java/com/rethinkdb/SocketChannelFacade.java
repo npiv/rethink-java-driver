@@ -57,12 +57,12 @@ public class SocketChannelFacade {
         _write(buffer);
     }
 
-    public int readLEInt() {
-        ByteBuffer buffer = _read(4, true);
-        ThreadUtil.sleep(1); // TODO: this resolves an issue, need to figure out if there is a delay on rethink side,
-                             // and or if this can be considered normal
-        return buffer.getInt();
-    }
+//    public int readLEInt() {
+//        ByteBuffer buffer = _read(4, true);
+//        ThreadUtil.sleep(1); // TODO: this resolves an issue, need to figure out if there is a delay on rethink side,
+//                             // and or if this can be considered normal
+//        return buffer.getInt();
+//    }
 
     public void writeStringWithLength(String s) {
         writeLEInt(s.length());
@@ -87,12 +87,25 @@ public class SocketChannelFacade {
 
     public Q2L.Response read() {
         try {
-            int len = readLEInt();
-            ByteBuffer buffer = _read(len, true);
-            return Q2L.Response.parseFrom(buffer.array());
+            ByteBuffer datalen = ByteBuffer.allocate(4);
+            datalen.order(ByteOrder.LITTLE_ENDIAN);
+            int bytesRead = socketChannel.read(datalen);
+            if (bytesRead != 4) {
+                throw new RethinkDBException("Error receiving data, expected 4 bytes but received " + bytesRead);
+            }
+            datalen.flip();
+            int len = datalen.getInt();
 
-        } catch (InvalidProtocolBufferException e) {
-            throw new RethinkDBException(e);
+            ByteBuffer buf = ByteBuffer.allocate(len);
+            bytesRead = 0;
+            while (bytesRead != len) {
+                bytesRead += socketChannel.read(buf);
+            }
+            buf.flip();
+            return Q2L.Response.parseFrom(buf.array());
+        }
+        catch (IOException ex) {
+            throw new RethinkDBException("IO Exception ",ex);
         }
     }
 
