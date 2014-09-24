@@ -13,13 +13,12 @@ public class DBResultFactory {
         switch (response.getType()) {
             case SUCCESS_ATOM:
                 return DBResponseMapper.fromDatumObject(response.getResponse(0));
+            case SUCCESS_PARTIAL:
+            case SUCCESS_FEED:
             case SUCCESS_SEQUENCE:
                 return (T) DBResponseMapper.fromDatumObjectList(response.getResponseList());
-
             case WAIT_COMPLETE:
-            case SUCCESS_PARTIAL:
                 throw new UnsupportedOperationException();
-
             case CLIENT_ERROR:
             case COMPILE_ERROR:
             case RUNTIME_ERROR:

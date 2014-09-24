@@ -18,7 +18,6 @@ public class SocketChannelFacade {
             socketChannel = SocketChannel.open();
             socketChannel.configureBlocking(true);
             socketChannel.connect(new InetSocketAddress(hostname, port));
-
         } catch (IOException e) {
             throw new RethinkDBException(e);
         }
@@ -116,6 +115,10 @@ public class SocketChannelFacade {
         catch (IOException ex) {
             throw new RethinkDBException("IO Exception ",ex);
         }
+    }
+
+    public boolean isClosed(){
+        return !socketChannel.isOpen();
     }
 
     public void close() {

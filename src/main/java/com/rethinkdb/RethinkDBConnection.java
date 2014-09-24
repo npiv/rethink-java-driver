@@ -62,19 +62,31 @@ public class RethinkDBConnection {
         socket.close();
     }
 
+    public boolean isClosed(){
+        return socket.isClosed();
+    }
+
     public void use(String dbName) {
         this.dbName = dbName;
     }
 
 
-    protected <T> T getNext(long token) {
+    protected Q2L.Response getNext(long token) {
         Q2L.Query query = Q2L.Query
                 .newBuilder()
                 .setToken(token)
                 .setType(Q2L.Query.QueryType.CONTINUE)
                 .build();
+        return execute(query);
+    }
 
-        return DBResultFactory.convert(execute(query));
+    protected <T> void closeCursor(Cursor<T> cursor) {
+        Q2L.Query query = Q2L.Query
+                .newBuilder()
+                .setToken(cursor.getToken())
+                .setType(Q2L.Query.QueryType.CONTINUE)
+                .build();
+        execute(query);
     }
 
     public <T> Cursor<T> runForCursor(Q2L.Term term) {
@@ -83,12 +95,7 @@ public class RethinkDBConnection {
 
         Q2L.Response response = execute(queryBuilder.build());
 
-        return new Cursor<T>(
-                (List<T>)DBResultFactory.convert(response),
-                this,
-                response.getToken(),
-                response.getType() == Q2L.Response.ResponseType.SUCCESS_PARTIAL
-        );
+        return new Cursor<T>(this, response);
     }
 
     public <T> T run(Q2L.Term term) {
