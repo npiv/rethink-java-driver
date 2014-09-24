@@ -20,7 +20,7 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <github.global.server>github</github.global.server>
-        <protoc.file>/usr/local/bin/protoc</protoc.file>
+        <protoc.file>/usr/bin/protoc</protoc.file>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
