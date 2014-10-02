@@ -56,7 +56,7 @@ public abstract class AbstractITTest {
         try {
             Properties props = new Properties();
             props.load(AbstractITTest.class.getResourceAsStream("/dbtest.properties"));
-            return RethinkDB.r.connect(props.getProperty("hostname"));
+            return RethinkDB.r.connect(props.getProperty("hostname"), Integer.parseInt(props.getProperty("port")));
         } catch (IOException e) {
             throw new RuntimeException("Couldn't load db properties", e);
         }

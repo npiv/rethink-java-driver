@@ -5,6 +5,7 @@ import com.rethinkdb.response.DBResultFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RethinkDBConnection {
@@ -19,7 +20,6 @@ public class RethinkDBConnection {
     private String dbName = null;
 
     private SocketChannelFacade socket = new SocketChannelFacade();
-    private Q2L.Query dbOption;
 
     public RethinkDBConnection() {
         this(RethinkDBConstants.DEFAULT_HOSTNAME);
@@ -62,25 +62,46 @@ public class RethinkDBConnection {
         socket.close();
     }
 
+    public boolean isClosed(){
+        return socket.isClosed();
+    }
+
     public void use(String dbName) {
         this.dbName = dbName;
     }
 
-    public <T> T run(Q2L.Term term) {
-        Q2L.Query.Builder queryBuilder = Q2L.Query
+
+    protected Q2L.Response getNext(long token) {
+        Q2L.Query query = Q2L.Query
                 .newBuilder()
-                .setToken(tokenGenerator.incrementAndGet())
-                .setType(Q2L.Query.QueryType.START)
-                .setQuery(term);
+                .setToken(token)
+                .setType(Q2L.Query.QueryType.CONTINUE)
+                .build();
+        return execute(query);
+    }
 
-        setDbOptionIfNeeded(queryBuilder, this.dbName);
+    protected <T> void closeCursor(Cursor<T> cursor) {
+        Q2L.Query query = Q2L.Query
+                .newBuilder()
+                .setToken(cursor.getToken())
+                .setType(Q2L.Query.QueryType.CONTINUE)
+                .build();
+        execute(query);
+    }
 
-        logger.debug("running {} ", queryBuilder.build());
+    public <T> Cursor<T> runForCursor(Q2L.Term term) {
 
-        socket.write(queryBuilder.build().toByteArray());
+        Q2L.Query.Builder queryBuilder = startQuery(term);
 
-        Q2L.Response response = socket.read();
-        return DBResultFactory.convert(response);
+        Q2L.Response response = execute(queryBuilder.build());
+
+        return new Cursor<T>(this, response);
+    }
+
+    public <T> T run(Q2L.Term term) {
+        Q2L.Query.Builder queryBuilder = startQuery(term);
+
+        return DBResultFactory.convert(execute(queryBuilder.build()));
     }
 
     // set the global option dbName if user chose one through use
@@ -112,6 +133,24 @@ public class RethinkDBConnection {
             }
         }
         return false;
+    }
+
+    private Q2L.Query.Builder startQuery(Q2L.Term term) {
+        Q2L.Query.Builder queryBuilder = Q2L.Query
+                .newBuilder()
+                .setToken(tokenGenerator.incrementAndGet())
+                .setType(Q2L.Query.QueryType.START)
+                .setQuery(term);
+
+        setDbOptionIfNeeded(queryBuilder, this.dbName);
+
+        return queryBuilder;
+    }
+
+    private <T> Q2L.Response execute(Q2L.Query query) {
+        logger.debug("running {} ", query);
+        socket.write(query.toByteArray());
+        return socket.read();
     }
 
 }

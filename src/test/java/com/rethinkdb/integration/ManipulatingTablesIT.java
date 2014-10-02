@@ -5,6 +5,8 @@ import com.rethinkdb.response.model.DMLResult;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class ManipulatingTablesIT extends AbstractITTest {
 
     @Test
@@ -34,6 +36,20 @@ public class ManipulatingTablesIT extends AbstractITTest {
         Assertions.assertThat(r.db(dbName).table(tableName).indexList().run(con())).containsExactly("wee");
         Assertions.assertThat(r.db(dbName).table(tableName).indexDrop("wee").run(con).getDropped()).isEqualTo(1);
         Assertions.assertThat(r.db(dbName).table(tableName).indexList().run(con())).isEmpty();
+    }
+
+    @Test
+    public void testTableInfo() {
+        Assertions.assertThat(r.db(dbName).table(tableName).info().run(con))
+                .isEqualTo(new MapObject()
+                        .with("db", new MapObject()
+                                .with("name", dbName)
+                                .with("type", "DB"))
+                        .with("indexes", new ArrayList(0))
+                        .with("name", tableName)
+                        .with("primary_key", "id")
+                        .with("type", "TABLE")
+                );
     }
 
     @Test

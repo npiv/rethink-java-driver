@@ -18,7 +18,6 @@ public class SocketChannelFacade {
             socketChannel = SocketChannel.open();
             socketChannel.configureBlocking(true);
             socketChannel.connect(new InetSocketAddress(hostname, port));
-
         } catch (IOException e) {
             throw new RethinkDBException(e);
         }
@@ -39,10 +38,19 @@ public class SocketChannelFacade {
         ByteBuffer buffer = ByteBuffer.allocate(i);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         try {
+            int totalRead = 0;
             int read = socketChannel.read(buffer);
-            if (read != i && strict) {
-                throw new RethinkDBException("Error receiving data, expected " + i + " bytes but received " + read);
+            totalRead += read;
+
+            while (strict && read != 0 && read != i) {
+                read = socketChannel.read(buffer);
+                totalRead+=read;
             }
+
+            if (totalRead != i && strict) {
+                throw new RethinkDBException("Error receiving data, expected " + i + " bytes but received " + totalRead);
+            }
+
             buffer.flip();
             return buffer;
         } catch (IOException e) {
@@ -107,6 +115,10 @@ public class SocketChannelFacade {
         catch (IOException ex) {
             throw new RethinkDBException("IO Exception ",ex);
         }
+    }
+
+    public boolean isClosed(){
+        return !socketChannel.isOpen();
     }
 
     public void close() {

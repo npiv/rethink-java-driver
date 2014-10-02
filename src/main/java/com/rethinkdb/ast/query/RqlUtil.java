@@ -2,23 +2,24 @@ package com.rethinkdb.ast.query;
 
 import com.rethinkdb.RethinkDB;
 import com.rethinkdb.RethinkDBException;
-import com.rethinkdb.ast.query.gen.*;
 import com.rethinkdb.model.RqlFunction;
-import com.rethinkdb.ast.query.RqlQuery;
+import com.rethinkdb.ast.query.gen.Datum;
+import com.rethinkdb.ast.query.gen.Func;
+import com.rethinkdb.ast.query.gen.MakeArray;
+import com.rethinkdb.ast.query.gen.MakeObj;
 import com.rethinkdb.model.RqlLambda;
 import com.rethinkdb.proto.Q2L;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
-import java.util.Map;
+
 
 public class RqlUtil {
     /**
      * Coerces objects from their native type to RqlQuery
+     *
      * @param val val
      * @return RqlQuery
      */
@@ -28,11 +29,11 @@ public class RqlUtil {
 
     private static RqlQuery toRqlQuery(java.lang.Object val, int remainingDepth) {
         if (val instanceof RqlQuery) {
-            return (RqlQuery)val;
+            return (RqlQuery) val;
         }
 
         if (val instanceof List) {
-            List<java.lang.Object> innerValues = new ArrayList<java.lang.Object>();
+            List<java.lang.Object> innerValues = new ArrayList<Object>();
             for (java.lang.Object innerValue : (List) val) {
                 innerValues.add(toRqlQuery(innerValue, remainingDepth - 1));
             }
@@ -46,7 +47,7 @@ public class RqlUtil {
                     throw new RethinkDBException("Object key can only be strings");
                 }
 
-                obj.put((String)entry.getKey(), toRqlQuery(entry.getValue()));
+                obj.put((String) entry.getKey(), toRqlQuery(entry.getValue()));
             }
             return new MakeObj(obj);
         }
@@ -79,9 +80,7 @@ public class RqlUtil {
                     return rqlQuery;
                 }
             });
-        }
-
-        else {
+        } else {
             return rqlQuery;
         }
     }
@@ -104,6 +103,7 @@ public class RqlUtil {
 
         return false;
     }
+
     public static Q2L.Datum createDatum(java.lang.Object value) {
         Q2L.Datum.Builder builder = Q2L.Datum.newBuilder();
 

@@ -6,6 +6,7 @@ import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
 import com.rethinkdb.ast.query.RqlQuery;
 import com.rethinkdb.ast.query.RqlUtil;
+import com.rethinkdb.model.ConflictStrategy;
 import com.rethinkdb.model.Durability;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.proto.Q2L;
@@ -22,8 +23,8 @@ public class Table extends RqlQuery {
         super(prev, Q2L.Term.TermType.TABLE, args, optionalArgs);
     }
 
-    public Insert insert(Map<String,Object> dbObject, Durability durability, Boolean returnVals, Boolean upsert) {
-        return insert(Lists.newArrayList(dbObject), durability, returnVals, upsert);
+    public Insert insert(Map<String,Object> dbObject, Durability durability, Boolean returnVals, ConflictStrategy conflict) {
+        return insert(Lists.newArrayList(dbObject), durability, returnVals, conflict);
     }
     public Insert insert(Map<String,Object>... dbObject) {
         return insert(Arrays.asList(dbObject), null, null, null);
@@ -33,14 +34,14 @@ public class Table extends RqlQuery {
         return insert(dbObjects, null, null, null);
     }
 
-    public Insert insert(List<Map<String,Object>> dbObjects, Durability durability, Boolean returnVals, Boolean upsert) {
+    public Insert insert(List<Map<String,Object>> dbObjects, Durability durability, Boolean returnVals, ConflictStrategy conflict) {
         Map<String, Object> optionalArgs = new HashMap<String, Object>();
 
         if (returnVals != null && returnVals == true) {
             optionalArgs.put("return_vals", true);
         }
-        if (upsert != null) {
-            optionalArgs.put("upsert", true);
+        if (conflict != null) {
+            optionalArgs.put("conflict", conflict.toString());
         }
         if (durability != null) {
             optionalArgs.put("durability", durability.toString());
@@ -84,6 +85,14 @@ public class Table extends RqlQuery {
 
     public IndexWait indexWait(String... indexNames) {
         return new IndexWait(this, new Arguments(indexNames), null);
+    }
+
+    public Info info(){
+        return new Info(this, null, null);
+    }
+
+    public Changes changes() {
+        return new Changes(this, null, null);
     }
 
     @Override

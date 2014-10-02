@@ -1,6 +1,7 @@
 package com.rethinkdb.ast.query;
 
 import com.google.common.collect.Lists;
+import com.rethinkdb.Cursor;
 import com.rethinkdb.RethinkDBConnection;
 import com.rethinkdb.ast.helper.Arguments;
 import com.rethinkdb.ast.helper.OptionalArguments;
@@ -93,6 +94,10 @@ public class RqlQuery {
 
     public Object run(RethinkDBConnection connection) {
         return connection.run(toTerm());
+    }
+
+    public <T> Cursor<T> runForCursor(RethinkDBConnection connection) {
+        return connection.runForCursor(toTerm());
     }
 
     public <K,V> Map<K,V> runForGroup(RethinkDBConnection connection) {

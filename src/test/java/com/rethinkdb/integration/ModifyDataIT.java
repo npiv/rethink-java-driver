@@ -1,5 +1,6 @@
 package com.rethinkdb.integration;
 
+import com.rethinkdb.model.ConflictStrategy;
 import com.rethinkdb.model.MapObject;
 import com.rethinkdb.model.RqlFunction;
 import com.rethinkdb.ast.query.RqlQuery;
@@ -50,9 +51,9 @@ public class ModifyDataIT extends AbstractITTest {
     @Test
     public void doubleInsertWorksWithUpsert() {
         DMLResult firstResult = r.db(dbName).table(tableName)
-                .insert(new MapObject().with("id", 1), Durability.hard, false, true).run(con);
+                .insert(new MapObject().with("id", 1), Durability.hard, false, ConflictStrategy.replace).run(con);
         DMLResult secondResult = r.db(dbName).table(tableName)
-                .insert(new MapObject().with("id", 1).with("field", "a"), Durability.hard, false, true).run(con);
+                .insert(new MapObject().with("id", 1).with("field", "a"), Durability.hard, false, ConflictStrategy.replace).run(con);
 
         Assertions.assertThat(firstResult.getInserted()).isEqualTo(1);
 

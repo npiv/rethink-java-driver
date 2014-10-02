@@ -120,6 +120,7 @@ message Response {
                               // the same token as this response, you will get
                               // more of the sequence.  Keep sending [CONTINUE]
                               // queries until you get back [SUCCESS_SEQUENCE].
+        SUCCESS_FEED     = 5; // Like [SUCCESS_PARTIAL] but for feeds.
         WAIT_COMPLETE    = 4; // A [NOREPLY_WAIT] query completed.
 
         // These response types indicate failure.
@@ -259,6 +260,23 @@ message Term {
         // Takes some javascript code and executes it.
         JAVASCRIPT   = 11; // STRING {timeout: !NUMBER} -> DATUM |
                            // STRING {timeout: !NUMBER} -> Function(*)
+        UUID = 169; // () -> DATUM
+
+        // Takes an HTTP URL and gets it.  If the get succeeds and
+        //  returns valid JSON, it is converted into a DATUM
+        HTTP = 153; // STRING {data: OBJECT | STRING,
+                    //         timeout: !NUMBER,
+                    //         method: STRING,
+                    //         params: OBJECT,
+                    //         header: OBJECT | ARRAY,
+                    //         attempts: NUMBER,
+                    //         redirects: NUMBER,
+                    //         verify: BOOL,
+                    //         page: FUNC | STRING,
+                    //         page_limit: NUMBER,
+                    //         auth: OBJECT,
+                    //         result_format: STRING,
+                    //         } -> STRING | STREAM
 
         // Takes a string and throws an error with that message.
         // Inside of a `default` block, you can omit the first
@@ -267,9 +285,6 @@ message Term {
         ERROR        = 12; // STRING -> Error | -> Error
         // Takes nothing and returns a reference to the implicit variable.
         IMPLICIT_VAR = 13; // -> DATUM
-
-        // Takes a range of numbers and returns a random number within the range
-        RANDOM = 151; // NUMBER, NUMBER {float:BOOL} -> DATUM
 
         // * Data Operators
         // Returns a reference to a database.
@@ -376,6 +391,10 @@ message Term {
         UNION     = 44; // Sequence... -> Sequence
         // Get the Nth element of a sequence.
         NTH       = 45; // Sequence, NUMBER -> DATUM
+        // do NTH or GET_FIELD depending on target object
+        BRACKET            = 170; // Sequence | OBJECT, NUMBER | STRING -> DATUM
+        // OBSOLETE_GROUPED_MAPREDUCE = 46;
+        // OBSOLETE_GROUPBY = 47;
 
         INNER_JOIN         = 48; // Sequence, Sequence, Function(2) -> Sequence
         OUTER_JOIN         = 49; // Sequence, Sequence, Function(2) -> Sequence
@@ -405,19 +424,21 @@ message Term {
         // * Write Ops (the OBJECTs contain data about number of errors etc.)
         // Updates all the rows in a selection.  Calls its Function with the row
         // to be updated, and then merges the result of that call.
-        UPDATE   = 53; // StreamSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT |
-                       // SingleSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT |
-                       // StreamSelection, OBJECT,      {non_atomic:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT |
-                       // SingleSelection, OBJECT,      {non_atomic:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT
+        UPDATE   = 53; // StreamSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_changes:BOOL} -> OBJECT |
+                       // SingleSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_changes:BOOL} -> OBJECT |
+                       // StreamSelection, OBJECT,      {non_atomic:BOOL, durability:STRING, return_changes:BOOL} -> OBJECT |
+                       // SingleSelection, OBJECT,      {non_atomic:BOOL, durability:STRING, return_changes:BOOL} -> OBJECT
         // Deletes all the rows in a selection.
-        DELETE   = 54; // StreamSelection, {durability:STRING, return_vals:BOOL} -> OBJECT | SingleSelection -> OBJECT
+        DELETE   = 54; // StreamSelection, {durability:STRING, return_changes:BOOL} -> OBJECT | SingleSelection -> OBJECT
         // Replaces all the rows in a selection.  Calls its Function with the row
         // to be replaced, and then discards it and stores the result of that
         // call.
-        REPLACE  = 55; // StreamSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT | SingleSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT
-        // Inserts into a table.  If `upsert` is true, overwrites entries with
-        // the same primary key (otherwise errors).
-        INSERT   = 56; // Table, OBJECT, {upsert:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT | Table, Sequence, {upsert:BOOL, durability:STRING, return_vals:BOOL} -> OBJECT
+        REPLACE  = 55; // StreamSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_changes:BOOL} -> OBJECT | SingleSelection, Function(1), {non_atomic:BOOL, durability:STRING, return_changes:BOOL} -> OBJECT
+        // Inserts into a table.  If `conflict` is replace, overwrites
+        // entries with the same primary key.  If `conflict` is
+        // update, does an update on the entry.  If `conflict` is
+        // error, or is omitted, conflicts will trigger an error.
+        INSERT   = 56; // Table, OBJECT, {conflict:STRING, durability:STRING, return_changes:BOOL} -> OBJECT | Table, Sequence, {conflict:STRING, durability:STRING, return_changes:BOOL} -> OBJECT
 
         // * Administrative OPs
         // Creates a database with a particular name.
@@ -458,6 +479,8 @@ message Term {
         // Blocks until a set of indexes are ready to be accessed. Returns the
         // same values INDEX_STATUS.
         INDEX_WAIT = 140; // Table, STRING... -> ARRAY
+        // Renames the given index to a new name
+        INDEX_RENAME = 156; // Table, STRING, STRING, {overwrite:BOOL} -> OBJECT
 
         // * Control Operators
         // Calls a function on data
@@ -632,6 +655,29 @@ message Term {
         SPLIT = 149; // STRING -> ARRAY | STRING, STRING -> ARRAY | STRING, STRING, NUMBER -> ARRAY | STRING, NULL, NUMBER -> ARRAY
 
         UNGROUP = 150; // GROUPED_DATA -> ARRAY
+
+        // Takes a range of numbers and returns a random number within the range
+        RANDOM = 151; // NUMBER, NUMBER {float:BOOL} -> DATUM
+
+        CHANGES = 152; // TABLE -> STREAM
+        ARGS = 154; // ARRAY -> SPECIAL (used to splice arguments)
+
+        // BINARY is client-only at the moment, it is not supported on the server
+        BINARY = 155; // STRING -> PSEUDOTYPE(BINARY)
+
+        GEOJSON = 157;           // OBJECT -> PSEUDOTYPE(GEOMETRY)
+        TO_GEOJSON = 158;        // PSEUDOTYPE(GEOMETRY) -> OBJECT
+        POINT = 159;             // NUMBER, NUMBER -> PSEUDOTYPE(GEOMETRY)
+        LINE = 160;              // (ARRAY | PSEUDOTYPE(GEOMETRY))... -> PSEUDOTYPE(GEOMETRY)
+        POLYGON = 161;           // (ARRAY | PSEUDOTYPE(GEOMETRY))... -> PSEUDOTYPE(GEOMETRY)
+        DISTANCE = 162;          // PSEUDOTYPE(GEOMETRY), PSEUDOTYPE(GEOMETRY) {geo_system:STRING, unit:STRING} -> NUMBER
+        INTERSECTS = 163;        // PSEUDOTYPE(GEOMETRY), PSEUDOTYPE(GEOMETRY) -> BOOL
+        INCLUDES = 164;          // PSEUDOTYPE(GEOMETRY), PSEUDOTYPE(GEOMETRY) -> BOOL
+        CIRCLE = 165;            // PSEUDOTYPE(GEOMETRY), NUMBER {num_vertices:NUMBER, geo_system:STRING, unit:STRING, fill:BOOL} -> PSEUDOTYPE(GEOMETRY)
+        GET_INTERSECTING = 166;  // TABLE, PSEUDOTYPE(GEOMETRY) {index:!STRING} -> StreamSelection
+        FILL = 167;              // PSEUDOTYPE(GEOMETRY) -> PSEUDOTYPE(GEOMETRY)
+        GET_NEAREST = 168;       // TABLE, PSEUDOTYPE(GEOMETRY) {index:!STRING, max_results:NUM, max_dist:NUM, geo_system:STRING, unit:STRING} -> ARRAY
+        POLYGON_SUB = 171;       // PSEUDOTYPE(GEOMETRY), PSEUDOTYPE(GEOMETRY) -> PSEUDOTYPE(GEOMETRY)
     }
     optional TermType type = 1;
 
