@@ -1,3 +1,8 @@
+# NOTICE
+
+I am not actively using rethink anymore and have little time to maintain the project. It may be possible that time opens up in the near future, but if anyone is eager to take this over / help out they are welcome to contact me.
+----------------
+
 ## Introduction
 
 [Full Documentation here](http://npiv.github.io/rethink-java-doc/html/)
